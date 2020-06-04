@@ -10,6 +10,8 @@ class Xiangqi():
   def __init__(self):
 
     # BOARD FUNCTIONS
+    
+    # Reference for in bound moves
                                   # Red Side
     self._board = [["a1","b1","c1","d1","e1","f1","g1","h1","i1"],
                    ["a2","b2","c2","d2","e2","f2","g2","h2","i2"],
@@ -23,7 +25,10 @@ class Xiangqi():
                    ["a9","b9","c9","d9","e9","f9","g9","h9","i9"],
                    ["a10","b10","c10","d10","e10","f10","g10","h10","i10"]]
                                   # Black Side
-    self._board_dict = {}
+
+    # Storage for red and black players for data access
+    self._board_dict_red = {}
+    self._board_dict_black = {}
 
     # START OF GAME
     self._player_turn = 'red'
@@ -32,19 +37,32 @@ class Xiangqi():
 
     # Initialize Game Pieces
     self._active_pieces = NewGame()
-    self.update_dict(self._active_pieces)
+    self.update_dict_red(self._active_pieces)
+    self.update_dict_black(self._active_pieces)
   
-  # Update dictionary data
-  def update_dict(self, pieces):
-    self._board_dict = {}
+  # Update dictionary data for red
+  def update_dict_red(self, pieces):
+    self._board_dict_red = {}
     count = 1
     for i in self._active_pieces:
-      self._board_dict[count] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()), "location: " + str(i.get_piece_location()), "Moves: " + str(i.get_legal_moves())]
-      count += 1
+      if i.get_player() == 'red':
+       self._board_dict_red[count] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()), "location: " + str(i.get_piece_location()), "Moves: " + str(i.get_legal_moves())]
+       count += 1
+
+  # Update dictionary data for black
+  def update_dict_black(self, pieces):
+    self._board_dict_black = {}
+    count_2 = 1
+    for i in self._active_pieces:
+      if i.get_player() == 'black':
+       self._board_dict_black[count_2] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()), "location: " + str(i.get_piece_location()), "Moves: " + str(i.get_legal_moves())]
+       count_2 += 1
 
   # Print piece information from dictionary 
   def get_piece_data(self):
-    pprint.pprint(self._board_dict)
+    pprint.pprint(self._board_dict_red)
+    print()
+    pprint.pprint(self._board_dict_black)
 
   # Print board layout
   def get_board(self):
@@ -84,13 +102,16 @@ class Xiangqi():
           if attack is True:
             self._active_pieces.remove(piece_2)
             piece.move_piece(end)
-            self.update_dict(self._active_pieces)
+            self.update_dict_red(self._active_pieces)
+            self.update_dict_black(self._active_pieces)
+            # legal_move_check()
             return True
           else:
             return False
         else:
           piece.move_piece(end)
-          self.update_dict(self._active_pieces)
+          self.update_dict_red(self._active_pieces)
+          self.update_dict_black(self._active_pieces)
       else:
         return False
     else:
@@ -147,7 +168,7 @@ class Pieces():
   # Adds legal moves to a move pool list.
   def set_legal_moves(self, location):
     if location not in self._legal_moves:
-      if legal_location_check(location):
+      if Xiangqi.legal_location_check(location):
         self._legal_moves.append(location)
     else:
       return False
@@ -165,13 +186,19 @@ class General(Pieces):
   def __init__(self):
     super().__init__()
     self._name = 'GENERAL'
-  
-  #TODO checks to see if any moves are legal for the General within parameters
-  def legal_move_check(self, location):
-    if legal_location_check():
-      return True
-    else:
-      return False
+
+  def add_legal_moves(self):
+    pass
+
+def legal_move_check(self):
+   #TODO checks to see if any moves are legal for the General within parameters
+   pass
+  # if name == 'GENERAL':
+  #   General.add_legal_moves()
+  # else:
+  #   return False
+  # pass
+
 
 def NewGame():
 
@@ -192,12 +219,10 @@ def NewGame():
   return new_game
 
     
-    
 xi = Xiangqi()
-print(xi.get_active_pieces())
 xi.get_piece_data()
 print(xi.make_move('e1','c1'))
 print()
 xi.get_piece_data()
-print(xi.make_move('h1', 'c1'))
+print(xi.make_move('d1', 'c1'))
 xi.get_piece_data()
