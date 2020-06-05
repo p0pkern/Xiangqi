@@ -2,9 +2,10 @@
 # Version: 0.0
 # Name: Xiangqi Game
 # Language: Python 3
-# Description: This is a program for the game Xiangqi (known as Chinese Chess). A tactical board game simulating a battle between two armies, Red and Black. 
+# Description: This is a program for the game Xiangqi (known as Chinese Chess). A tactical board game simulating a
+# battle between two armies, Red and Black.
 
-#Modules
+# Modules
 import pprint
 
 class Xiangqi():
@@ -43,6 +44,8 @@ class Xiangqi():
     self._active_pieces = NewGame()
     self.update_dict_red(self._active_pieces)
     self.update_dict_black(self._active_pieces)
+    for i in self._active_pieces:
+      legal_move_check(i)
   
   # Update dictionary data for red
   def update_dict_red(self, pieces):
@@ -51,7 +54,7 @@ class Xiangqi():
     for i in self._active_pieces:
       if i.get_player() == 'red':
        self._board_dict_red[count] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()), "location: " + str(i.get_piece_location()), "Moves: " + str(i.get_legal_moves())]
-       legal_move_check(self, i)
+       legal_move_check(i)
        count += 1
 
   # Update dictionary data for black
@@ -61,8 +64,10 @@ class Xiangqi():
     for i in self._active_pieces:
       if i.get_player() == 'black':
        self._board_dict_black[count_2] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()), "location: " + str(i.get_piece_location()), "Moves: " + str(i.get_legal_moves())]
-       legal_move_check(self, i)
+       legal_move_check(i)
        count_2 += 1
+
+  # Get active pieces
 
   # Print piece information from dictionary 
   def get_piece_data(self):
@@ -184,6 +189,10 @@ class Pieces():
     else:
       return False
 
+  # Add potential move to move pool
+  def add_move_to_pool(self, move):
+    self._legal_moves.append(move)
+
   # Moves the piece, clears out legal moves, and checks for any
   # legal moves. If so it adds them to the legal move pool
   def move_piece(self, location):
@@ -198,21 +207,24 @@ class General(Pieces):
     super().__init__()
     self._name = 'GENERAL'
 
-  def general_legal_moves(self, color):
+  def general_legal_moves(self, piece):
+    color = piece.get_player()
     if color == 'red':
-      print("red")
+      move_pool = ['d1','d2','e1','e2','f1','f2']
+      for i in move_pool:
+        if i not in piece.get_legal_moves():
+          print(piece.get_legal_moves())
       return True
     elif color == 'black':
-      print("black")
       return True
     else:
       return False
 
-def legal_move_check(self, name):
-   #TODO checks to see if any moves are legal for the General within parameters
+def legal_move_check(name):
+  #TODO checks to see if any moves are legal for the General within parameters
+  #TODO This is broken and needs to be fixed.
   if name.get_piece_name() == 'GENERAL':
-    player = name.get_player()
-    General.general_legal_moves(self, player)
+    General.general_legal_moves(name)
   else:
     print("Failed at legal move check")
     return False
@@ -244,8 +256,8 @@ def NewGame():
     
 xi = Xiangqi()
 # xi.get_piece_data()
-print(xi.make_move('e1','c1'))
-print()
+# print(xi.make_move('e1','c1'))
+# print()
 # xi.get_piece_data()
-print(xi.make_move('d1', 'c1'))
-# xi.get_piece_data()
+# print(xi.make_move('d1', 'c1'))
+xi.get_piece_data()
