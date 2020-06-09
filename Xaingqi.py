@@ -8,7 +8,8 @@
 # Modules
 import pprint
 
-class Xiangqi():
+
+class Xiangqi:
   """
   Main game engine. 
   """
@@ -41,31 +42,40 @@ class Xiangqi():
     self._game_state = 'UNFINISHED' 
 
     # Initialize Game Pieces
+    # _active_pieces stores all piece data for reference.
     self._active_pieces = NewGame()
-    self.update_dict_red(self._active_pieces)
-    self.update_dict_black(self._active_pieces)
-    for i in self._active_pieces:
-      legal_move_check(i)
-  
-  # Update dictionary data for red
-  def update_dict_red(self, pieces):
+    self.update_move_pool(self._active_pieces)
+
+  # Update dictionary data for red and black shows name, player, location, and move pool
+  def update_dict(self, pieces):
+    # Update red dictionary
     self._board_dict_red = {}
     count = 1
-    for i in self._active_pieces:
+    for i in pieces:
       if i.get_player() == 'red':
-       self._board_dict_red[count] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()), "location: " + str(i.get_piece_location()), "Moves: " + str(i.get_legal_moves())]
-       legal_move_check(i)
-       count += 1
+        self._board_dict_red[count] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()),
+                                      "location: " + str(i.get_piece_location()),
+                                      "Moves: " + str(i.get_legal_moves())]
+        count += 1
 
-  # Update dictionary data for black
-  def update_dict_black(self, pieces):
+    # Update black dictionary
     self._board_dict_black = {}
     count_2 = 1
-    for i in self._active_pieces:
+    for i in pieces:
       if i.get_player() == 'black':
-       self._board_dict_black[count_2] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()), "location: " + str(i.get_piece_location()), "Moves: " + str(i.get_legal_moves())]
-       legal_move_check(i)
-       count_2 += 1
+        self._board_dict_black[count_2] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()),
+                                           "location: " + str(i.get_piece_location()),
+                                           "Moves: " + str(i.get_legal_moves())]
+        count_2 += 1
+
+  # Update move pool for pieces in list of active pieces
+  def update_move_pool(self, pieces):
+    for i in pieces:
+      piece = i
+      if i.get_piece_name() == 'GENERAL':
+        i.general_legal_moves(piece)
+    self.update_dict(self._active_pieces)
+    return True
 
   # Get active pieces
 
@@ -74,11 +84,6 @@ class Xiangqi():
     pprint.pprint(self._board_dict_red)
     print()
     pprint.pprint(self._board_dict_black)
-
-  # Print board layout
-  def get_board(self):
-    for i in self._board:
-      print(i)
 
   # PLAYER TURN FUNCTIONS
   def set_player_turn(self):
@@ -117,16 +122,13 @@ class Xiangqi():
           if attack is True:
             self._active_pieces.remove(piece_2)
             piece.move_piece(end)
-            self.update_dict_red(self._active_pieces)
-            self.update_dict_black(self._active_pieces)
-            # legal_move_check()
+            self.update_move_pool(self._active_pieces)
             return True
           else:
             return False
         else:
           piece.move_piece(end)
-          self.update_dict_red(self._active_pieces)
-          self.update_dict_black(self._active_pieces)
+          self.update_move_pool(self._active_pieces)
           return True
       else:
         return False
@@ -180,14 +182,6 @@ class Pieces():
   # Get legal moves pool
   def get_legal_moves(self):
     return self._legal_moves
- 
-  # Adds legal moves to a move pool list.
-  def set_legal_moves(self, location):
-    if location not in self._legal_moves:
-      if Xiangqi.legal_location_check(location):
-        self._legal_moves.append(location)
-    else:
-      return False
 
   # Add potential move to move pool
   def add_move_to_pool(self, move):
@@ -210,30 +204,21 @@ class General(Pieces):
   def general_legal_moves(self, piece):
     color = piece.get_player()
     if color == 'red':
-      move_pool = ['d1','d2','e1','e2','f1','f2']
+      move_pool = ['d1','d2','d3','e1','e2','e3','f1','f2','f3']
       for i in move_pool:
         if i not in piece.get_legal_moves():
-          print(piece.get_legal_moves())
+          if i != piece.get_piece_location():
+            piece.add_move_to_pool(i)
       return True
     elif color == 'black':
+      move_pool = ['d8','d9','d10','e8','e9','e10','f8','f9','f10']
+      for i in move_pool:
+        if i not in piece.get_legal_moves():
+          if i != piece.get_piece_location():
+            piece.add_move_to_pool(i)
       return True
     else:
       return False
-
-def legal_move_check(name):
-  #TODO checks to see if any moves are legal for the General within parameters
-  #TODO This is broken and needs to be fixed.
-  if name.get_piece_name() == 'GENERAL':
-    General.general_legal_moves(name)
-  else:
-    print("Failed at legal move check")
-    return False
-  # if name == 'GENERAL':
-  #   General.add_legal_moves()
-  # else:
-  #   return False
-  # pass
-
 
 def NewGame():
 
@@ -245,6 +230,12 @@ def NewGame():
   red_general.move_piece('e1')
   new_game.append(red_general)
 
+  # DEBUGGING RED GENERAL
+  red_general = General()
+  red_general.set_player('red')
+  red_general.move_piece('f1')
+  new_game.append(red_general)
+
   # BLACK SIDE
   black_general = General()
   black_general.set_player('black')
@@ -253,11 +244,6 @@ def NewGame():
 
   return new_game
 
-    
 xi = Xiangqi()
-# xi.get_piece_data()
-# print(xi.make_move('e1','c1'))
-# print()
-# xi.get_piece_data()
-# print(xi.make_move('d1', 'c1'))
 xi.get_piece_data()
+
