@@ -73,7 +73,7 @@ class Xiangqi:
     for i in pieces:
       piece = i
       if i.get_piece_name() == 'GENERAL':
-        i.general_legal_moves(piece)
+        i.general_legal_moves(piece, pieces)
     self.update_dict(self._active_pieces)
     return True
 
@@ -183,6 +183,10 @@ class Pieces():
   def get_legal_moves(self):
     return self._legal_moves
 
+  # Clears out the move pool
+  def clear_pool(self):
+    self._legal_moves = []
+
   # Add potential move to move pool
   def add_move_to_pool(self, move):
     self._legal_moves.append(move)
@@ -191,8 +195,6 @@ class Pieces():
   # legal moves. If so it adds them to the legal move pool
   def move_piece(self, location):
     self._current_location = location
-    self._legal_moves = []
-    #TODO Put in function to check all legal moves
 
 # INDIVIDUAL PIECES
 class General(Pieces):
@@ -201,14 +203,17 @@ class General(Pieces):
     super().__init__()
     self._name = 'GENERAL'
 
-  def general_legal_moves(self, piece):
+  def general_legal_moves(self, piece, piece_list):
     color = piece.get_player()
+    piece.clear_pool()
     if color == 'red':
       move_pool = ['d1','d2','d3','e1','e2','e3','f1','f2','f3']
       for i in move_pool:
-        if i not in piece.get_legal_moves():
-          if i != piece.get_piece_location():
-            piece.add_move_to_pool(i)
+        if i != piece.get_piece_location():
+          piece.add_move_to_pool(i)
+      for j in piece_list:
+        if j.get_piece_location() in piece.get_legal_moves() and j.get_player() == color:
+          piece.get_legal_moves().remove(j.get_piece_location())
       return True
     elif color == 'black':
       move_pool = ['d8','d9','d10','e8','e9','e10','f8','f9','f10']
