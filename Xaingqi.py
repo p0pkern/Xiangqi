@@ -46,7 +46,7 @@ class Xiangqi:
     self._active_pieces = NewGame()
     self.update_move_pool(self._active_pieces)
 
-  # Update dictionary data for red and black shows name, player, location, and move pool
+  # Updates dictionary data for red and black; shows name, player, location, and move pool.
   def update_dict(self, pieces):
     # Update red dictionary
     self._board_dict_red = {}
@@ -120,16 +120,24 @@ class Xiangqi:
               break
         if block is True:
           if attack is True:
-            self._active_pieces.remove(piece_2)
+            if self.legal_move_check(piece, end, self._active_pieces):
+              self._active_pieces.remove(piece_2)
+              piece.move_piece(end)
+              self.update_move_pool(self._active_pieces)
+              return True
+            else:
+              print("Can't attack own pieces")
+              return False
+          else:
+            return False
+        else:
+          if self.legal_move_check(piece, end, self._active_pieces):
             piece.move_piece(end)
             self.update_move_pool(self._active_pieces)
             return True
           else:
+            print("occupied by player piece")
             return False
-        else:
-          piece.move_piece(end)
-          self.update_move_pool(self._active_pieces)
-          return True
       else:
         return False
     else:
@@ -143,6 +151,15 @@ class Xiangqi:
         in_bounds = True
         break
     return in_bounds
+
+  def legal_move_check(self, player, location, legal_moves):
+    for i in legal_moves:
+      if i.get_player() == player.get_player():
+        print("Works")
+        return False
+      else:
+        print("nope")
+        return False
 
   # DEBUGGING
   def get_active_pieces(self):
@@ -191,7 +208,6 @@ class Pieces():
   def add_move_to_pool(self, move):
     self._legal_moves.append(move)
 
-  # Moves the piece, clears out legal moves, and checks for any
   # legal moves. If so it adds them to the legal move pool
   def move_piece(self, location):
     self._current_location = location
@@ -250,5 +266,6 @@ def NewGame():
   return new_game
 
 xi = Xiangqi()
+xi.make_move('e1', 'f1')
 xi.get_piece_data()
 
