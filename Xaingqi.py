@@ -224,6 +224,13 @@ class General(Pieces):
     self._name = 'GENERAL'
 
   def general_legal_moves(self, piece, piece_list, board):
+    """
+    Will check the board for all of the General's legal moves and add them to the reference pool
+    :param piece:
+    :param piece_list:
+    :param board:
+    :return:
+    """
     color = piece.get_player()
     piece.clear_pool()
     if color == 'red':
