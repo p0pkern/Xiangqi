@@ -73,7 +73,7 @@ class Xiangqi:
     for i in pieces:
       piece = i
       if i.get_piece_name() == 'GENERAL':
-        i.general_legal_moves(piece, pieces)
+        i.general_legal_moves(piece, pieces, self._board)
     self.update_dict(self._active_pieces)
     return True
 
@@ -223,27 +223,27 @@ class General(Pieces):
     super().__init__()
     self._name = 'GENERAL'
 
-  def general_legal_moves(self, piece, piece_list):
+  def general_legal_moves(self, piece, piece_list, board):
     color = piece.get_player()
     piece.clear_pool()
     if color == 'red':
       move_pool = ['d1','d2','d3','e1','e2','e3','f1','f2','f3']
-      for i in move_pool:
-        if i != piece.get_piece_location():
-          piece.add_move_to_pool(i)
-      for j in piece_list:
-        if j.get_piece_location() in piece.get_legal_moves() and j.get_player() == color:
-          piece.get_legal_moves().remove(j.get_piece_location())
-      return True
     elif color == 'black':
-      move_pool = ['d8','d9','d10','e8','e9','e10','f8','f9','f10']
-      for i in move_pool:
-        if i not in piece.get_legal_moves():
-          if i != piece.get_piece_location():
-            piece.add_move_to_pool(i)
-      return True
-    else:
-      return False
+      move_pool = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
+    for i in board:
+      for t in i:
+       if piece.get_piece_location() == t:
+         index_column = i.index(t)
+         index_row = board.index(i)
+    print(index_column)
+    print(index_row)
+    print(board[index_row][index_column])
+    # if i != piece.get_piece_location():
+    #   piece.add_move_to_pool(i)
+    for j in piece_list:
+      if j.get_piece_location() in piece.get_legal_moves() and j.get_player() == color:
+        piece.get_legal_moves().remove(j.get_piece_location())
+    return True
 
 def NewGame():
 
@@ -257,8 +257,8 @@ def NewGame():
 
   # DEBUGGING RED GENERAL
   red_general = General()
-  red_general.set_player('red')
-  red_general.move_piece('f1')
+  red_general.set_player('black')
+  red_general.move_piece('f10')
   new_game.append(red_general)
 
   # BLACK SIDE
