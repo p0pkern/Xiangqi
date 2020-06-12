@@ -104,42 +104,45 @@ class Xiangqi:
 
     if start == end:      # Prevents movement to the same space
       return False
+
+    # Verify start and end are within the board
     if self.legal_location_check(start) and self.legal_location_check(end):
+
+      # Find the piece located in start
       for i in self._active_pieces:
         if i.get_piece_location() == start:
           piece = i
+          break
       if piece is None:
         return False
-      for t in self._active_pieces:
-        for j in self._active_pieces:
-          if j != piece:
-            if j.get_piece_location() == end:
-              piece_2 = j
-              attack = True
-              block = True
-              break
-        if block is True:
-          if attack is True:
-            if self.legal_move_check(piece, end, self._active_pieces):
-              self._active_pieces.remove(piece_2)
-              piece.move_piece(end)
-              self.update_move_pool(self._active_pieces)
-              return True
-            else:
-              print("Can't attack own pieces")
-              return False
-          else:
-            return False
-        else:
+
+      for j in self._active_pieces:
+        if j != piece:
+          if j.get_piece_location() == end:
+            piece_2 = j
+            attack = True
+            block = True
+            break
+      if block is True:
+        if attack is True:
           if self.legal_move_check(piece, end, self._active_pieces):
+            self._active_pieces.remove(piece_2)
             piece.move_piece(end)
             self.update_move_pool(self._active_pieces)
             return True
           else:
-            print("occupied by player piece")
+            print("Can't attack own pieces")
             return False
+        else:
+          return False
       else:
-        return False
+        if self.legal_move_check(piece, end, self._active_pieces):
+          piece.move_piece(end)
+          self.update_move_pool(self._active_pieces)
+          return True
+        else:
+          print("occupied by player piece")
+          return False
     else:
       return False
 
@@ -154,12 +157,13 @@ class Xiangqi:
 
   def legal_move_check(self, player, location, legal_moves):
     for i in legal_moves:
-      if i.get_player() == player.get_player():
-        print("Works")
-        return False
-      else:
-        print("nope")
-        return False
+      if i.get_piece_location() == location:
+        if i.get_player() != player.get_player():
+          print("Works")
+          return True
+        else:
+          print("nope")
+          return False
 
   # DEBUGGING
   def get_active_pieces(self):
@@ -260,7 +264,7 @@ def NewGame():
   # BLACK SIDE
   black_general = General()
   black_general.set_player('black')
-  black_general.move_piece('d1')
+  black_general.move_piece('d10')
   new_game.append(black_general)
 
   return new_game
