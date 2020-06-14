@@ -78,7 +78,7 @@ class Xiangqi:
     for i in piece:
       piece = i
       if i.get_piece_name() == 'GENERAL':
-        i.general_legal_moves(piece, self._board)
+        i.general_legal_moves(piece, self._board, self._active_pieces)
     self.update_dict(self._active_pieces)
     return True
 
@@ -253,6 +253,12 @@ class Pieces():
     """
     self._current_location = location
 
+  def delete_move(self, move):
+    """
+    Deletes the selected move from the move pool.
+    """
+    self._legal_moves.remove(move)
+
 # INDIVIDUAL PIECES
 class General(Pieces):
   """
@@ -263,7 +269,7 @@ class General(Pieces):
     super().__init__()
     self._name = 'GENERAL'
 
-  def general_legal_moves(self, piece, board):
+  def general_legal_moves(self, piece, board, piece_list):
     """
     Will check the board for all of the General's legal moves and add them to the reference pool
     :param piece: Piece to update move pool for.
@@ -327,6 +333,11 @@ class General(Pieces):
           piece.add_move_to_pool(board[index_row][index_column + 1])
     except:
       pass
+
+    for j in piece_list:
+      if j.get_player() == color and j.get_piece_location() in piece.get_legal_moves():
+        remove = j.get_piece_location()
+        piece.delete_move(remove)
     return True
 
 def NewGame():
@@ -346,6 +357,17 @@ def NewGame():
   black_general.set_player('black')
   black_general.move_piece('e10')
   new_game.append(black_general)
+
+  # DEBUGGING
+  red_general_test = General()
+  red_general_test.set_player('black')
+  red_general_test.move_piece('d10')
+  new_game.append(red_general_test)
+
+  black_general_test = General()
+  black_general_test.set_player('red')
+  black_general_test.move_piece('d1')
+  new_game.append(black_general_test)
 
   return new_game
 
