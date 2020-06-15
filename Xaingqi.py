@@ -141,24 +141,18 @@ class Xiangqi:
       # If there is a piece in end and it is an enemy piece take the piece location and move, otherwise return False.
       if block is True:
         if attack is True:
-          if self.legal_move_check(piece, end, self._active_pieces):
-            self._active_pieces.remove(piece_2)
-            piece.move_piece(end)
-            self.update_move_pool(self._active_pieces)
-            return True
-          else:
-            return False
-        else:
-          return False
-
-      # If there is no piece in the current location and it is a legal move, move the piece.
-      else:
-        if self.legal_move_check(piece, end, self._active_pieces):
+          self._active_pieces.remove(piece_2)
           piece.move_piece(end)
           self.update_move_pool(self._active_pieces)
           return True
         else:
           return False
+
+      # If there is no piece in the current location and it is a legal move, move the piece.
+      else:
+        piece.move_piece(end)
+        self.update_move_pool(self._active_pieces)
+        return True
     else:
       return False
 
@@ -174,21 +168,6 @@ class Xiangqi:
         in_bounds = True
         break
     return in_bounds
-
-  def legal_move_check(self, piece, location, active_pieces):
-    """
-    Checks if end location is in the player current location.
-    :param piece: Piece that wants to move.
-    :param location: Location piece wants to travel.
-    :param active_pieces: List of object pieces to reference.
-    :return:
-    """
-    for i in active_pieces:
-      if i.get_piece_location() == location:
-        if i.get_player() != piece.get_player():
-          return True
-        else:
-          return False
 
   # TODO - DEBUGGING AREA
 
@@ -358,20 +337,17 @@ def NewGame():
   black_general.move_piece('e10')
   new_game.append(black_general)
 
-  # DEBUGGING
-  red_general_test = General()
-  red_general_test.set_player('black')
-  red_general_test.move_piece('d10')
-  new_game.append(red_general_test)
-
-  black_general_test = General()
-  black_general_test.set_player('red')
-  black_general_test.move_piece('d1')
-  new_game.append(black_general_test)
-
   return new_game
 
 # TESTING PURPOSES
 xi = Xiangqi()
+xi.get_piece_data()
+xi.make_move('e1', 'f1')
+xi.make_move('e10', 'f10')
+print()
+xi.get_piece_data()
+print()
+xi.make_move('f1', 'w1')
+xi.make_move('f10', 'w10')
 xi.get_piece_data()
 
