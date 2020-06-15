@@ -238,6 +238,16 @@ class Pieces():
     """
     self._legal_moves.remove(move)
 
+  def get_index_of_location(self, piece, board):
+    index_column = None
+    index_row = None
+    for i in board:
+      for t in i:
+       if piece.get_piece_location() == t:
+         index_column = i.index(t)
+         index_row = board.index(i)
+    return index_column, index_row
+
 # INDIVIDUAL PIECES
 class General(Pieces):
   """
@@ -253,6 +263,7 @@ class General(Pieces):
     Will check the board for all of the General's legal moves and add them to the reference pool
     :param piece: Piece to update move pool for.
     :param board: Reference of the board.
+    :param piece_list: The list of current active pieces for reference.
     """
     color = piece.get_player()  # Set to current player.
     piece.clear_pool()  # Clear move pool.
@@ -265,11 +276,7 @@ class General(Pieces):
       move_pool_2 = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
 
     # Set the index for row and column to the pieces current location for reference.
-    for i in board:
-      for t in i:
-       if piece.get_piece_location() == t:
-         index_column = i.index(t)
-         index_row = board.index(i)
+    index_column, index_row = self.get_index_of_location(piece, board)
 
     # General can move only orthogonally. This will add each legal orthogonal move to the legal move pool.
     try:
