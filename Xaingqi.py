@@ -79,6 +79,8 @@ class Xiangqi:
       piece = i
       if i.get_piece_name() == 'GENERAL':
         i.general_legal_moves(piece, self._board, self._active_pieces)
+      elif i.get_piece_name() == 'ADVISOR':
+        i.advisor_legal_moves(piece, self._board, self._active_pieces)
     self.update_dict(self._active_pieces)
     return True
 
@@ -126,7 +128,14 @@ class Xiangqi:
         if i.get_piece_location() == start:
           piece = i
           break
+
+      # Check to see that a piece is actually selected.
       if piece is None:
+        return False
+
+      # Verify legal move is in move pool.
+      if end not in piece.get_legal_moves():
+        print("Illegal move")
         return False
 
       # Check if there is piece at the end location.
@@ -252,7 +261,8 @@ class Pieces():
 class General(Pieces):
   """
   The General is the King of the pieces. This is the piece that the enemy team must try and capture. This class will
-  contain the data the General needs to update it's move pool
+  contain the data the General needs to update it's move pool.
+  Generals can only move in the confines of the castle, in any direction orthoganally.
   """
   def __init__(self):
     super().__init__()
@@ -326,6 +336,78 @@ class General(Pieces):
         piece.delete_move(remove)
     return True
 
+class Advisor(Pieces):
+  """
+  Advisors guard the General in the castle. They can move one space any direction diagonally.
+  """
+  def __init__(self):
+    super().__init__()
+    self._name = 'ADVISOR'
+
+  def advisor_legal_moves(self, piece, board, piece_list):
+
+    color = piece.get_player()  # Set to current player.
+    piece.clear_pool()  # Clear move pool.
+
+    # Each General can not leave a specific square. This is all the potential moves that a General could make in the
+    # confines of the square.
+    if color == 'red':
+      move_pool_1 = ['d1', 'd2', 'd3', 'e1', 'e2', 'e3', 'f1', 'f2', 'f3']
+    elif color == 'black':
+      move_pool_2 = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
+
+    # Set the index for row and column to the pieces current location for reference.
+    index_column, index_row = self.get_index_of_location(piece, board)
+
+    # Advisor can move only diagonally in one direction.
+    # This will add each legal diagonal move to the legal move pool.
+    try:
+      # Upward one row of the board, same column.
+      if color == 'red':
+        if board[index_row - 1][index_column - 1] in move_pool_1:
+          piece.add_move_to_pool(board[index_row - 1][index_column - 1])
+      elif color == 'black':
+        if board[index_row - 1][index_column - 1] in move_pool_2:
+          piece.add_move_to_pool(board[index_row - 1][index_column - 1])
+    except:
+      pass
+    try:
+      # Down one row of the board, same column.
+      if color == 'red':
+        if board[index_row - 1][index_column + 1] in move_pool_1:
+          piece.add_move_to_pool(board[index_row - 1][index_column + 1])
+      elif color == 'black':
+        if board[index_row - 1][index_column + 1] in move_pool_2:
+          piece.add_move_to_pool(board[index_row - 1][index_column + 1])
+    except:
+      pass
+    try:
+      # Left one column on the board, same row.
+      if color == 'red':
+        if board[index_row + 1][index_column - 1] in move_pool_1:
+          piece.add_move_to_pool(board[index_row + 1][index_column - 1])
+      elif color == 'black':
+        if board[index_row + 1][index_column - 1] in move_pool_2:
+          piece.add_move_to_pool(board[index_row + 1][index_column - 1])
+    except:
+      pass
+    try:
+      # Right one column of the board, same row.
+      if color == 'red':
+        if board[index_row + 1][index_column + 1] in move_pool_1:
+          piece.add_move_to_pool(board[index_row + 1][index_column + 1])
+      elif color == 'black':
+        if board[index_row + 1][index_column + 1] in move_pool_2:
+          piece.add_move_to_pool(board[index_row + 1][index_column + 1])
+    except:
+      pass
+
+    for j in piece_list:
+      if j.get_player() == color and j.get_piece_location() in piece.get_legal_moves():
+        remove = j.get_piece_location()
+        piece.delete_move(remove)
+    return True
+
 def NewGame():
   """
   This will load all the initial pieces to the correct locations for a new game. Returns a list of all pre-loaded pieces.
@@ -338,23 +420,41 @@ def NewGame():
   red_general.move_piece('e1')
   new_game.append(red_general)
 
+  red_advisor_left = Advisor()
+  red_advisor_left.set_player('red')
+  red_advisor_left.move_piece('d1')
+  new_game.append(red_advisor_left)
+
+  red_advisor_right = Advisor()
+  red_advisor_right.set_player('red')
+  red_advisor_right.move_piece('f1')
+  new_game.append(red_advisor_right)
+
+
   # BLACK SIDE
   black_general = General()
   black_general.set_player('black')
   black_general.move_piece('e10')
   new_game.append(black_general)
 
+  black_advisor_left = Advisor()
+  black_advisor_left.set_player('black')
+  black_advisor_left.move_piece('d10')
+  new_game.append(black_advisor_left)
+
+  black_advisor_right = Advisor()
+  black_advisor_right.set_player('black')
+  black_advisor_right.move_piece('f10')
+  new_game.append(black_advisor_right)
+
   return new_game
 
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-xi.make_move('e1', 'f1')
-xi.make_move('e10', 'f10')
+xi.make_move('f1', 'e2')
+xi.make_move('f10', 'e9')
 print()
 xi.get_piece_data()
-print()
-xi.make_move('f1', 'w1')
-xi.make_move('f10', 'w10')
-xi.get_piece_data()
+
 
