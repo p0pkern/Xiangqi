@@ -81,6 +81,9 @@ class Xiangqi:
         i.general_legal_moves(piece, self._board, self._active_pieces)
       elif i.get_piece_name() == 'ADVISOR':
         i.advisor_legal_moves(piece, self._board, self._active_pieces)
+      elif i.get_piece_name() == 'ELEPHANT':
+        i.elephant_legal_moves(piece, self._board, self._active_pieces)
+
     self.update_dict(self._active_pieces)
     return True
 
@@ -408,6 +411,27 @@ class Advisor(Pieces):
         piece.delete_move(remove)
     return True
 
+class Elephant(Pieces):
+
+  def __init__(self):
+    super().__init__()
+    self._name = 'ELEPHANT'
+
+  def elephant_legal_moves(self, piece, board, piece_list):
+
+    color = piece.get_player()  # Set to current player.
+    piece.clear_pool()  # Clear move pool.
+
+    # Set the index for row and column to the pieces current location for reference.
+    index_column, index_row = self.get_index_of_location(piece, board)
+
+    # Elephant eye checks.
+    # Elephant cannot move if there is a piece directly next to it diagonally.
+
+    move_pool = []
+    for i in piece_list:
+      move_pool.append(i.get_piece_location)
+
 def NewGame():
   """
   This will load all the initial pieces to the correct locations for a new game. Returns a list of all pre-loaded pieces.
@@ -430,6 +454,16 @@ def NewGame():
   red_advisor_right.move_piece('f1')
   new_game.append(red_advisor_right)
 
+  red_elephant_left = Elephant()
+  red_elephant_left.set_player('red')
+  red_elephant_left.move_piece('c1')
+  new_game.append(red_elephant_left)
+
+  red_elephant_right = Elephant()
+  red_elephant_right.set_player('red')
+  red_elephant_right.move_piece('g1')
+  new_game.append(red_elephant_right)
+
 
   # BLACK SIDE
   black_general = General()
@@ -447,14 +481,24 @@ def NewGame():
   black_advisor_right.move_piece('f10')
   new_game.append(black_advisor_right)
 
+  red_elephant_left = Elephant()
+  red_elephant_left.set_player('black')
+  red_elephant_left.move_piece('c10')
+  new_game.append(red_elephant_left)
+
+  red_elephant_right = Elephant()
+  red_elephant_right.set_player('black')
+  red_elephant_right.move_piece('g10')
+  new_game.append(red_elephant_right)
+
   return new_game
 
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-xi.make_move('f1', 'e2')
-xi.make_move('f10', 'e9')
-print()
-xi.get_piece_data()
+# xi.make_move('f1', 'e2')
+# xi.make_move('f10', 'e9')
+# print()
+# xi.get_piece_data()
 
 
