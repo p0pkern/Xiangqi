@@ -427,10 +427,55 @@ class Elephant(Pieces):
 
     # Elephant eye checks.
     # Elephant cannot move if there is a piece directly next to it diagonally.
+    up_left_flag = True
+    up_right_flag = True
+    down_left_flag = True
+    down_right_flag = True
 
+    # Pool of moves to reference.
     move_pool = []
-    for i in piece_list:
-      move_pool.append(i.get_piece_location)
+
+    #Check that each piece does not move to a negative index.
+    try:
+      a = board[index_row - 1][index_column - 1]
+      b = str(piece.get_piece_location())
+      if int(a[1:]) > int(b[1:]):
+        up_left_flag = False
+      else:
+        for i in piece_list:
+          if i.get_piece_location() == a:
+            up_left_flag = False
+    except:
+      pass
+    try:
+      a = board[index_row - 1][index_column + 1]
+      b = str(piece.get_piece_location())
+      if int(a[1:]) > int(b[1:]):
+        up_right_flag = False
+      else:
+        for i in piece_list:
+          if i.get_piece_location() == a:
+            up_right_flag = False
+    except:
+      pass
+    try:
+      a = board[index_row + 1][index_column - 1]
+      for i in piece_list:
+        if i.get_piece_location() == a:
+          down_left_flag = False
+    except:
+      down_left_flag = False
+    try:
+      a = board[index_row + 1][index_column + 1]
+      for i in piece_list:
+        if i.get_piece_location() == a:
+          down_right_flag = False
+    except:
+      down_right_flag = False
+
+    # Check moves in move pool. If there is a piece blocking the elephants eye, block move from being in pool.
+    if up_left_flag is True:
+      pass
 
 def NewGame():
   """
@@ -496,9 +541,9 @@ def NewGame():
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-# xi.make_move('f1', 'e2')
+xi.make_move('c10', 'd9')
 # xi.make_move('f10', 'e9')
-# print()
-# xi.get_piece_data()
+print()
+xi.get_piece_data()
 
 
