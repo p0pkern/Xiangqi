@@ -29,7 +29,7 @@ class Xiangqi:
                    ["a7","b7","c7","d7","e7","f7","g7","h7","i7"],
                    ["a8","b8","c8","d8","e8","f8","g8","h8","i8"],
                    ["a9","b9","c9","d9","e9","f9","g9","h9","i9"],
-                   ["a10","b10","c10","d10","e10","f10","g10","h10","i10"]]
+                ["a10","b10","c10","d10","e10","f10","g10","h10","i10"]]
                                   # Black Side
 
     # Player dictionaries for important piece data.
@@ -437,10 +437,12 @@ class Elephant(Pieces):
 
     #Check that each piece does not move to a negative index.
     try:
+      # Check upper left square
       a = board[index_row - 1][index_column - 1]
       b = str(piece.get_piece_location())
       if int(a[1:]) > int(b[1:]):
         up_left_flag = False
+      # Check to see if there is a piece blocking elephants vision
       else:
         for i in piece_list:
           if i.get_piece_location() == a:
@@ -448,10 +450,12 @@ class Elephant(Pieces):
     except:
       pass
     try:
+      # Check upper right square
       a = board[index_row - 1][index_column + 1]
       b = str(piece.get_piece_location())
       if int(a[1:]) > int(b[1:]):
         up_right_flag = False
+      # Check to see if there is a piece blocking elephants vision
       else:
         for i in piece_list:
           if i.get_piece_location() == a:
@@ -459,6 +463,7 @@ class Elephant(Pieces):
     except:
       pass
     try:
+      # Check lower left square
       a = board[index_row + 1][index_column - 1]
       for i in piece_list:
         if i.get_piece_location() == a:
@@ -466,6 +471,7 @@ class Elephant(Pieces):
     except:
       down_left_flag = False
     try:
+      # Check lower right square
       a = board[index_row + 1][index_column + 1]
       for i in piece_list:
         if i.get_piece_location() == a:
@@ -475,7 +481,41 @@ class Elephant(Pieces):
 
     # Check moves in move pool. If there is a piece blocking the elephants eye, block move from being in pool.
     if up_left_flag is True:
-      pass
+      try:
+        a = board[index_row - 2][index_column - 2]
+        b = str(piece.get_piece_location())
+        if int(a[1:]) > int(b[1:]):
+          pass
+        else:
+          piece.add_move_to_pool(a)
+      except:
+        pass
+    if up_right_flag is True:
+      try:
+        a = board[index_row - 2][index_column + 2]
+        b = str(piece.get_piece_location())
+        if int(a[1:]) > int(b[1:]):
+          pass
+        else:
+          piece.add_move_to_pool(a)
+      except:
+        pass
+    if down_left_flag is True:
+      try:
+        a = board[index_row + 2][index_column - 2]
+        piece.add_move_to_pool(a)
+      except:
+        pass
+    if down_right_flag is True:
+      try:
+        a = board[index_row + 2][index_column + 2]
+        piece.add_move_to_pool(a)
+      except:
+        pass
+
+    for m in piece_list:
+      if m.get_piece_location() in piece.get_legal_moves():
+        piece.delete_move(m.get_piece_location())
 
 def NewGame():
   """
@@ -509,7 +549,6 @@ def NewGame():
   red_elephant_right.move_piece('g1')
   new_game.append(red_elephant_right)
 
-
   # BLACK SIDE
   black_general = General()
   black_general.set_player('black')
@@ -541,7 +580,7 @@ def NewGame():
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-xi.make_move('c10', 'd9')
+xi.make_move('c10', 'e8')
 # xi.make_move('f10', 'e9')
 print()
 xi.get_piece_data()
