@@ -539,8 +539,7 @@ class Horse(Pieces):
     down_flag = True
     right_flag = True
 
-    move_pool = []
-
+    # Check if a piece is blocking orthogonally
     try:
       a = board[index_row - 1][index_column]
       b = board[index_row][index_column]
@@ -549,31 +548,59 @@ class Horse(Pieces):
     except:
       pass
     try:
-      a = board[index_row][index_column - 1]
-      b = board[index_row][index_column]
-      if int(a[1:]) > int(b[1:]):
-        left_flag = False
+      board[index_row][index_column - 1]
     except:
-      pass
+      left_flag = False
     try:
-      a = board[index_row][index_column + 1]
-      b = board[index_row][index_column]
-      if int(a[1:]) > int(b[1:]):
-        right_flag = False
+      board[index_row][index_column + 1]
     except:
-      pass
+      right_flag = False
     try:
-      a = board[index_row + 1][index_column]
-      b = board[index_row][index_column]
-      if int(a[1:]) > int(b[1:]):
-        down_flag = False
+      board[index_row + 1][index_column]
     except:
-      pass
+      down_flag = False
 
-    piece.add_move_to_pool(up_flag)
-    piece.add_move_to_pool(left_flag)
-    piece.add_move_to_pool(right_flag)
-    piece.add_move_to_pool(down_flag)
+    # Check the legal moves if nothings in the way.
+
+    if up_flag is True:
+      try:
+        a = board[index_row - 2][index_column + 1]
+        b = board[index_row][index_column]
+        c = board[index_row - 2][index_column - 1]
+        if int(a[1:]) < int(b[1:]):
+          piece.add_move_to_pool(a)
+        if int(c[1:]) < int(b[1:]):
+          piece.add_move_to_pool(c)
+      except:
+        pass
+
+    if left_flag is True:
+      try:
+        a = board[index_row - 1][index_column - 2]
+        c = board[index_row + 1][index_column - 2]
+        piece.add_move_to_pool(a)
+        piece.add_move_to_pool(c)
+      except:
+        pass
+
+    if right_flag is True:
+      try:
+        a = board[index_row - 1][index_column + 2]
+        c = board[index_row + 1][index_column + 2]
+        piece.add_move_to_pool(a)
+        piece.add_move_to_pool(c)
+      except:
+        pass
+
+    if down_flag is True:
+      try:
+        a = board[index_row + 2][index_column - 1]
+        c = board[index_row + 2][index_column + 1]
+        piece.add_move_to_pool(a)
+        piece.add_move_to_pool(c)
+      except:
+        pass
+
 
 def NewGame():
   """
@@ -659,9 +686,9 @@ def NewGame():
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-# xi.make_move('c10', 'e8')
-# print()
-# xi.get_piece_data()
+xi.make_move('b10', 'c8')
+print()
+xi.get_piece_data()
 # xi.make_move('e8', 'c6')
 # print()
 # xi.get_piece_data()
