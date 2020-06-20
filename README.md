@@ -4,8 +4,7 @@
 - GUI will be implemented in Pygame as soon as the backend structure is complete
 
 ## Current Version Notes
-Elephant piece and movements added to game.
-Currently working on implementing horse piece.
+Horse piece movements added need to compensate for reverse indexing.
 
 ## Installation
 Currently the only way to launch this is to clone repository and run in IDE of choice. As soon as I figure out how to make it launchable I'll implement it.
