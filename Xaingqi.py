@@ -525,8 +525,55 @@ class Horse(Pieces):
     super().__init__()
     self._name = 'HORSE'
 
-  def horse_legal_move(self, piece, board, piece_list):
-    pass
+  def horse_legal_moves(self, piece, board, piece_list):
+    color = piece.get_player()  # Set to current player.
+    piece.clear_pool()  # Clear move pool.
+
+    # Set the index for row and column to the pieces current location for reference.
+    index_column, index_row = self.get_index_of_location(piece, board)
+
+    # Horse blocked checks.
+    # Horse moves one square orthogonally and then one square diagonally from the orthogonal direction.
+    up_flag = True
+    left_flag = True
+    down_flag = True
+    right_flag = True
+
+    move_pool = []
+
+    try:
+      a = board[index_row - 1][index_column]
+      b = board[index_row][index_column]
+      if int(a[1:]) > int(b[1:]):
+        up_flag = False
+    except:
+      pass
+    try:
+      a = board[index_row][index_column - 1]
+      b = board[index_row][index_column]
+      if int(a[1:]) > int(b[1:]):
+        left_flag = False
+    except:
+      pass
+    try:
+      a = board[index_row][index_column + 1]
+      b = board[index_row][index_column]
+      if int(a[1:]) > int(b[1:]):
+        right_flag = False
+    except:
+      pass
+    try:
+      a = board[index_row + 1][index_column]
+      b = board[index_row][index_column]
+      if int(a[1:]) > int(b[1:]):
+        down_flag = False
+    except:
+      pass
+
+    piece.add_move_to_pool(up_flag)
+    piece.add_move_to_pool(left_flag)
+    piece.add_move_to_pool(right_flag)
+    piece.add_move_to_pool(down_flag)
 
 def NewGame():
   """
@@ -560,6 +607,17 @@ def NewGame():
   red_elephant_right.move_piece('g1')
   new_game.append(red_elephant_right)
 
+  red_horse_left = Horse()
+  red_horse_left.set_player('red')
+  red_horse_left.move_piece('b1')
+  new_game.append(red_horse_left)
+
+  red_horse_right = Horse()
+  red_horse_right.set_player('red')
+  red_horse_right.move_piece('h1')
+  new_game.append(red_horse_right)
+
+
   # BLACK SIDE
   black_general = General()
   black_general.set_player('black')
@@ -586,22 +644,32 @@ def NewGame():
   red_elephant_right.move_piece('g10')
   new_game.append(red_elephant_right)
 
+  red_horse_left = Horse()
+  red_horse_left.set_player('black')
+  red_horse_left.move_piece('b10')
+  new_game.append(red_horse_left)
+
+  red_horse_right = Horse()
+  red_horse_right.set_player('black')
+  red_horse_right.move_piece('h10')
+  new_game.append(red_horse_right)
+
   return new_game
 
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-xi.make_move('c10', 'e8')
-print()
-xi.get_piece_data()
-xi.make_move('e8', 'c6')
-print()
-xi.get_piece_data()
-xi.make_move('c6', 'e4')
-print()
-xi.get_piece_data()
-xi.make_move('e4', 'c2')
-print()
-xi.get_piece_data()
+# xi.make_move('c10', 'e8')
+# print()
+# xi.get_piece_data()
+# xi.make_move('e8', 'c6')
+# print()
+# xi.get_piece_data()
+# xi.make_move('c6', 'e4')
+# print()
+# xi.get_piece_data()
+# xi.make_move('e4', 'c2')
+# print()
+# xi.get_piece_data()
 
 
