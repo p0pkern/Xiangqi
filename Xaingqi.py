@@ -83,6 +83,8 @@ class Xiangqi:
         i.advisor_legal_moves(piece, self._board, self._active_pieces)
       elif i.get_piece_name() == 'ELEPHANT':
         i.elephant_legal_moves(piece, self._board, self._active_pieces)
+      elif i.get_piece_name() == 'HORSE':
+        i.horse_legal_moves(piece, self._board, self._active_pieces)
 
     self.update_dict(self._active_pieces)
     return True
@@ -514,8 +516,17 @@ class Elephant(Pieces):
         pass
 
     for m in piece_list:
-      if m.get_piece_location() in piece.get_legal_moves():
+      if m.get_piece_location() in piece.get_legal_moves() and m.get_player() == piece.get_player():
         piece.delete_move(m.get_piece_location())
+
+class Horse(Pieces):
+
+  def __init__(self):
+    super().__init__()
+    self._name = 'HORSE'
+
+  def horse_legal_move(self, piece, board, piece_list):
+    pass
 
 def NewGame():
   """
@@ -581,7 +592,15 @@ def NewGame():
 xi = Xiangqi()
 xi.get_piece_data()
 xi.make_move('c10', 'e8')
-# xi.make_move('f10', 'e9')
+print()
+xi.get_piece_data()
+xi.make_move('e8', 'c6')
+print()
+xi.get_piece_data()
+xi.make_move('c6', 'e4')
+print()
+xi.get_piece_data()
+xi.make_move('e4', 'c2')
 print()
 xi.get_piece_data()
 
