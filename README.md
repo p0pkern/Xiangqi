@@ -10,4 +10,5 @@ Currently the only way to launch this is to clone repository and run in IDE of c
 This is a personal project for my portfolio. Suggestions are always welcome.
 
 ## Current Version Notes
+6/21/20 - TO DO correct horse movements. Test other pieces to see if they fall in to the same trap.
 6/20/20 - Horse piece movements added need to compensate for reverse indexing.

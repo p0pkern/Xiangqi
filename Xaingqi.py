@@ -532,20 +532,23 @@ class Horse(Pieces):
     # Set the index for row and column to the pieces current location for reference.
     index_column, index_row = self.get_index_of_location(piece, board)
 
-    # Horse blocked checks.
-    # Horse moves one square orthogonally and then one square diagonally from the orthogonal direction.
-    up_flag = True
-    left_flag = True
-    down_flag = True
-    right_flag = True
-
-    # Check if a piece is blocking orthogonally
+    # Check on the Horse legal moves
     try:
+      temp = False
+      # Set a to the left square, then check to see if any pieces are currently in that square.
       a = board[index_row - 1][index_column]
-      b = board[index_row][index_column]
-      if int(a[1:]) > int(b[1:]):
-        up_flag = False
+      for i in piece_list:
+        if i.get_piece_location() == a and i != piece:
+          temp = True
+          break
+      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      if temp is not True:
+        b = board[index_row - 1][index_column - 2]
+        if board[index_row - 1].index(b) < board[index_row].index(piece.get_piece_location()):
+          piece.add_move_to_pool(b)
+
     except:
+      print("Broken")
       pass
     try:
       board[index_row][index_column - 1]
@@ -560,47 +563,6 @@ class Horse(Pieces):
     except:
       down_flag = False
 
-    # Check the legal moves if nothings in the way.
-
-    if up_flag is True:
-      try:
-        a = board[index_row - 2][index_column + 1]
-        b = board[index_row][index_column]
-        c = board[index_row - 2][index_column - 1]
-        if int(a[1:]) < int(b[1:]):
-          piece.add_move_to_pool(a)
-        if int(c[1:]) < int(b[1:]):
-          piece.add_move_to_pool(c)
-      except:
-        pass
-
-    if left_flag is True:
-      try:
-        a = board[index_row - 1][index_column - 2]
-        c = board[index_row + 1][index_column - 2]
-        piece.add_move_to_pool(a)
-        piece.add_move_to_pool(c)
-      except:
-        pass
-
-    if right_flag is True:
-      try:
-        a = board[index_row - 1][index_column + 2]
-        c = board[index_row + 1][index_column + 2]
-        piece.add_move_to_pool(a)
-        piece.add_move_to_pool(c)
-      except:
-        pass
-
-    if down_flag is True:
-      try:
-        a = board[index_row + 2][index_column - 1]
-        c = board[index_row + 2][index_column + 1]
-        piece.add_move_to_pool(a)
-        piece.add_move_to_pool(c)
-      except:
-        pass
-
 
 def NewGame():
   """
@@ -609,86 +571,86 @@ def NewGame():
   new_game = []
   
   # RED SIDE
-  red_general = General()
-  red_general.set_player('red')
-  red_general.move_piece('e1')
-  new_game.append(red_general)
+  # red_general = General()
+  # red_general.set_player('red')
+  # red_general.move_piece('e1')
+  # new_game.append(red_general)
+  #
+  # red_advisor_left = Advisor()
+  # red_advisor_left.set_player('red')
+  # red_advisor_left.move_piece('d1')
+  # new_game.append(red_advisor_left)
+  #
+  # red_advisor_right = Advisor()
+  # red_advisor_right.set_player('red')
+  # red_advisor_right.move_piece('f1')
+  # new_game.append(red_advisor_right)
 
-  red_advisor_left = Advisor()
-  red_advisor_left.set_player('red')
-  red_advisor_left.move_piece('d1')
-  new_game.append(red_advisor_left)
+  # red_elephant_left = Elephant()
+  # red_elephant_left.set_player('red')
+  # red_elephant_left.move_piece('c1')
+  # new_game.append(red_elephant_left)
 
-  red_advisor_right = Advisor()
-  red_advisor_right.set_player('red')
-  red_advisor_right.move_piece('f1')
-  new_game.append(red_advisor_right)
-
-  red_elephant_left = Elephant()
-  red_elephant_left.set_player('red')
-  red_elephant_left.move_piece('c1')
-  new_game.append(red_elephant_left)
-
-  red_elephant_right = Elephant()
-  red_elephant_right.set_player('red')
-  red_elephant_right.move_piece('g1')
-  new_game.append(red_elephant_right)
+  # red_elephant_right = Elephant()
+  # red_elephant_right.set_player('red')
+  # red_elephant_right.move_piece('g1')
+  # new_game.append(red_elephant_right)
 
   red_horse_left = Horse()
   red_horse_left.set_player('red')
-  red_horse_left.move_piece('b1')
+  red_horse_left.move_piece('d3')
   new_game.append(red_horse_left)
 
-  red_horse_right = Horse()
-  red_horse_right.set_player('red')
-  red_horse_right.move_piece('h1')
-  new_game.append(red_horse_right)
+  # red_horse_right = Horse()
+  # red_horse_right.set_player('red')
+  # red_horse_right.move_piece('h1')
+  # new_game.append(red_horse_right)
 
 
   # BLACK SIDE
-  black_general = General()
-  black_general.set_player('black')
-  black_general.move_piece('e10')
-  new_game.append(black_general)
-
-  black_advisor_left = Advisor()
-  black_advisor_left.set_player('black')
-  black_advisor_left.move_piece('d10')
-  new_game.append(black_advisor_left)
-
-  black_advisor_right = Advisor()
-  black_advisor_right.set_player('black')
-  black_advisor_right.move_piece('f10')
-  new_game.append(black_advisor_right)
-
-  red_elephant_left = Elephant()
-  red_elephant_left.set_player('black')
-  red_elephant_left.move_piece('c10')
-  new_game.append(red_elephant_left)
-
-  red_elephant_right = Elephant()
-  red_elephant_right.set_player('black')
-  red_elephant_right.move_piece('g10')
-  new_game.append(red_elephant_right)
-
-  red_horse_left = Horse()
-  red_horse_left.set_player('black')
-  red_horse_left.move_piece('b10')
-  new_game.append(red_horse_left)
-
-  red_horse_right = Horse()
-  red_horse_right.set_player('black')
-  red_horse_right.move_piece('h10')
-  new_game.append(red_horse_right)
+  # black_general = General()
+  # black_general.set_player('black')
+  # black_general.move_piece('e10')
+  # new_game.append(black_general)
+  #
+  # black_advisor_left = Advisor()
+  # black_advisor_left.set_player('black')
+  # black_advisor_left.move_piece('d10')
+  # new_game.append(black_advisor_left)
+  #
+  # black_advisor_right = Advisor()
+  # black_advisor_right.set_player('black')
+  # black_advisor_right.move_piece('f10')
+  # new_game.append(black_advisor_right)
+  #
+  # red_elephant_left = Elephant()
+  # red_elephant_left.set_player('black')
+  # red_elephant_left.move_piece('c10')
+  # new_game.append(red_elephant_left)
+  #
+  # red_elephant_right = Elephant()
+  # red_elephant_right.set_player('black')
+  # red_elephant_right.move_piece('g10')
+  # new_game.append(red_elephant_right)
+  #
+  # red_horse_left = Horse()
+  # red_horse_left.set_player('black')
+  # red_horse_left.move_piece('b10')
+  # new_game.append(red_horse_left)
+  #
+  # red_horse_right = Horse()
+  # red_horse_right.set_player('black')
+  # red_horse_right.move_piece('h10')
+  # new_game.append(red_horse_right)
 
   return new_game
 
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-xi.make_move('b10', 'c8')
-print()
-xi.get_piece_data()
+# xi.make_move('b10', 'c8')
+# print()
+# xi.get_piece_data()
 # xi.make_move('e8', 'c6')
 # print()
 # xi.get_piece_data()
