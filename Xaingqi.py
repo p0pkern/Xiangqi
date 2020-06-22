@@ -533,36 +533,117 @@ class Horse(Pieces):
     index_column, index_row = self.get_index_of_location(piece, board)
 
     # Check on the Horse legal moves
+
+    # Left - up (left 2 up 1)
     try:
       temp = False
+      left_flag = False
       # Set a to the left square, then check to see if any pieces are currently in that square.
-      a = board[index_row - 1][index_column]
+      a = board[index_row][index_column - 1]
       for i in piece_list:
         if i.get_piece_location() == a and i != piece:
           temp = True
+          left_flag = True
           break
       # If there is no piece in the left square, check to see if the index of the move wraps around the board.
       if temp is not True:
         b = board[index_row - 1][index_column - 2]
-        if board[index_row - 1].index(b) < board[index_row].index(piece.get_piece_location()):
+        if (index_row - 1) >= 0 and (index_column - 2) >= 0:
           piece.add_move_to_pool(b)
-
     except:
-      print("Broken")
       pass
+    # left - down (left 2 down 1)
     try:
-      board[index_row][index_column - 1]
+      if left_flag is not True:
+        c = board[index_row + 1][index_column - 2]
+        if (index_row + 1) in range(0, 10) and (index_column - 2) in range(0, 10):
+          piece.add_move_to_pool(c)
     except:
-      left_flag = False
-    try:
-      board[index_row][index_column + 1]
-    except:
-      right_flag = False
-    try:
-      board[index_row + 1][index_column]
-    except:
-      down_flag = False
+      print("broken 2")
+      pass
 
+    # Up - left (up 2 left 1)
+    try:
+      temp_2 = False
+      up_flag = False
+      # Set a to the left square, then check to see if any pieces are currently in that square.
+      d = board[index_row - 1][index_column]
+      for i in piece_list:
+        if i.get_piece_location() == d and i != piece:
+          temp_2 = True
+          up_flag = True
+          break
+      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      if temp_2 is not True:
+        e = board[index_row - 2][index_column - 1]
+        if (index_row - 2) >= 0 and (index_column - 1) >= 0:
+          piece.add_move_to_pool(e)
+    except:
+      print("broken")
+      pass
+    # up - right (up 2 right 1)
+    try:
+      if up_flag is not True:
+        f = board[index_row - 2][index_column + 1]
+        if (index_row - 2) in range(0, 10) and (index_column + 1) in range(0, 10):
+          piece.add_move_to_pool(f)
+    except:
+      print("broken")
+      pass
+
+    # right - up (right 2 up 1)
+    try:
+      temp_3 = False
+      right_flag = False
+      # Set a to the left square, then check to see if any pieces are currently in that square.
+      g = board[index_row][index_column + 1]
+      for i in piece_list:
+        if i.get_piece_location() == g and i != piece:
+          temp_3 = True
+          right_flag = True
+          break
+      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      if temp_3 is not True:
+        h = board[index_row - 1][index_column + 2]
+        if (index_row - 2) >= 0 and (index_column - 1) >= 0:
+          piece.add_move_to_pool(h)
+    except:
+      pass
+    # right - down (left 2 down 1)
+    try:
+      if right_flag is not True:
+        j = board[index_row + 1][index_column + 2]
+        if (index_row + 1) in range(0, 10) and (index_column + 2) in range(0, 10):
+          piece.add_move_to_pool(j)
+    except:
+      pass
+
+    # down - left (down 2 left 1)
+    try:
+      temp_4 = False
+      down_flag = False
+      # Set a to the left square, then check to see if any pieces are currently in that square.
+      k = board[index_row + 1][index_column]
+      for i in piece_list:
+        if i.get_piece_location() == k and i != piece:
+          temp_4 = True
+          down_flag = True
+          break
+      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      if temp_4 is not True:
+        l = board[index_row + 2][index_column - 1]
+        if (index_row + 2) >= 0 and (index_column - 1) >= 0:
+          piece.add_move_to_pool(l)
+    except:
+      pass
+    # down - right (left 2 down 1)
+    try:
+      if down_flag is not True:
+        m = board[index_row + 2][index_column + 1]
+        if (index_row + 2) in range(0, 10) and (index_column + 1) in range(0, 10):
+          piece.add_move_to_pool(m)
+    except:
+      pass
 
 def NewGame():
   """
@@ -596,15 +677,15 @@ def NewGame():
   # red_elephant_right.move_piece('g1')
   # new_game.append(red_elephant_right)
 
-  red_horse_left = Horse()
-  red_horse_left.set_player('red')
-  red_horse_left.move_piece('d3')
-  new_game.append(red_horse_left)
+  # red_horse_left = Horse()
+  # red_horse_left.set_player('red')
+  # red_horse_left.move_piece('c3')
+  # new_game.append(red_horse_left)
 
-  # red_horse_right = Horse()
-  # red_horse_right.set_player('red')
-  # red_horse_right.move_piece('h1')
-  # new_game.append(red_horse_right)
+  red_horse_right = Horse()
+  red_horse_right.set_player('red')
+  red_horse_right.move_piece('a1')
+  new_game.append(red_horse_right)
 
 
   # BLACK SIDE
