@@ -10,6 +10,7 @@ Currently the only way to launch this is to clone repository and run in IDE of c
 This is a personal project for my portfolio. Suggestions are always welcome.
 
 ## Current Version Notes 
-TODO - Go back to Elephant and apply format from Horse to Elephant.
-6/21/20 - Fixed horse movements, utilized index_number rather than location
-6/20/20 - Horse piece movements added need to compensate for reverse indexing.
+- TODO - (Later) Find moments to combine repeated code in to functions.
+- TODO - Go back to Elephant and apply format from Horse to Elephant.
+- 6/21/20 - Fixed horse movements, utilized index_number rather than location
+- 6/20/20 - Horse piece movements added need to compensate for reverse indexing.
