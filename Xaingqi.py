@@ -427,97 +427,67 @@ class Elephant(Pieces):
     # Set the index for row and column to the pieces current location for reference.
     index_column, index_row = self.get_index_of_location(piece, board)
 
-    # Elephant eye checks.
-    # Elephant cannot move if there is a piece directly next to it diagonally.
-    up_left_flag = True
-    up_right_flag = True
-    down_left_flag = True
-    down_right_flag = True
-
-    # Pool of moves to reference.
-    move_pool = []
-
-    #Check that each piece does not move to a negative index.
+    # Up left
     try:
-      # Check upper left square
+      temp = False
+      # Set a to the left square, then check to see if any pieces are currently in that square, illegal move.
       a = board[index_row - 1][index_column - 1]
-      b = str(piece.get_piece_location())
-      if int(a[1:]) > int(b[1:]):
-        up_left_flag = False
-      # Check to see if there is a piece blocking elephants vision
-      else:
-        for i in piece_list:
-          if i.get_piece_location() == a:
-            up_left_flag = False
+      for i in piece_list:
+        if i.get_piece_location() == a and i != piece:
+          temp = True
+          break
+      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      if temp is not True:
+        b = board[index_row - 2][index_column - 2]
+        if (index_row - 2) >= 0 and (index_column - 2) >= 0:
+          piece.add_move_to_pool(b)
     except:
       pass
     try:
-      # Check upper right square
-      a = board[index_row - 1][index_column + 1]
-      b = str(piece.get_piece_location())
-      if int(a[1:]) > int(b[1:]):
-        up_right_flag = False
-      # Check to see if there is a piece blocking elephants vision
-      else:
-        for i in piece_list:
-          if i.get_piece_location() == a:
-            up_right_flag = False
+      temp_2 = False
+      # Set a to the left square, then check to see if any pieces are currently in that square.
+      c = board[index_row - 1][index_column + 1]
+      for i in piece_list:
+        if i.get_piece_location() == c and i != piece:
+          temp_2 = True
+          break
+      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      if temp_2 is not True:
+        d = board[index_row - 2][index_column + 2]
+        if (index_row - 2) >= 0 and (index_column + 2) in range(0, 10):
+          piece.add_move_to_pool(d)
     except:
       pass
     try:
-      # Check lower left square
-      a = board[index_row + 1][index_column - 1]
+      temp_3 = False
+      # Set a to the left square, then check to see if any pieces are currently in that square.
+      e = board[index_row + 1][index_column - 1]
       for i in piece_list:
-        if i.get_piece_location() == a:
-          down_left_flag = False
+        if i.get_piece_location() == e and i != piece:
+          temp_3 = True
+          break
+      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      if temp_3 is not True:
+        f = board[index_row + 2][index_column - 2]
+        if (index_row + 2) in range(0, 10) and (index_column - 2) in range(0, 10):
+          piece.add_move_to_pool(f)
     except:
-      down_left_flag = False
+      pass
     try:
-      # Check lower right square
-      a = board[index_row + 1][index_column + 1]
+      temp_4 = False
+      # Set a to the left square, then check to see if any pieces are currently in that square.
+      g = board[index_row + 1][index_column + 1]
       for i in piece_list:
-        if i.get_piece_location() == a:
-          down_right_flag = False
+        if i.get_piece_location() == g and i != piece:
+          temp_4 = True
+          break
+      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      if temp_4 is not True:
+        h = board[index_row + 2][index_column + 2]
+        if (index_row + 2) in range(0, 10) and (index_column + 2) in range(0, 10):
+          piece.add_move_to_pool(h)
     except:
-      down_right_flag = False
-
-    # Check moves in move pool. If there is a piece blocking the elephants eye, block move from being in pool.
-    if up_left_flag is True:
-      try:
-        a = board[index_row - 2][index_column - 2]
-        b = str(piece.get_piece_location())
-        if int(a[1:]) > int(b[1:]):
-          pass
-        else:
-          piece.add_move_to_pool(a)
-      except:
-        pass
-    if up_right_flag is True:
-      try:
-        a = board[index_row - 2][index_column + 2]
-        b = str(piece.get_piece_location())
-        if int(a[1:]) > int(b[1:]):
-          pass
-        else:
-          piece.add_move_to_pool(a)
-      except:
-        pass
-    if down_left_flag is True:
-      try:
-        a = board[index_row + 2][index_column - 2]
-        piece.add_move_to_pool(a)
-      except:
-        pass
-    if down_right_flag is True:
-      try:
-        a = board[index_row + 2][index_column + 2]
-        piece.add_move_to_pool(a)
-      except:
-        pass
-
-    for m in piece_list:
-      if m.get_piece_location() in piece.get_legal_moves() and m.get_player() == piece.get_player():
-        piece.delete_move(m.get_piece_location())
+      pass
 
 class Horse(Pieces):
 
@@ -667,25 +637,25 @@ def NewGame():
   # red_advisor_right.move_piece('f1')
   # new_game.append(red_advisor_right)
 
-  # red_elephant_left = Elephant()
-  # red_elephant_left.set_player('red')
-  # red_elephant_left.move_piece('c1')
-  # new_game.append(red_elephant_left)
+  red_elephant_left = Elephant()
+  red_elephant_left.set_player('red')
+  red_elephant_left.move_piece('g8')
+  new_game.append(red_elephant_left)
 
   # red_elephant_right = Elephant()
   # red_elephant_right.set_player('red')
   # red_elephant_right.move_piece('g1')
   # new_game.append(red_elephant_right)
 
-  # red_horse_left = Horse()
-  # red_horse_left.set_player('red')
-  # red_horse_left.move_piece('c3')
-  # new_game.append(red_horse_left)
+  red_horse_left = Horse()
+  red_horse_left.set_player('red')
+  red_horse_left.move_piece('h9')
+  new_game.append(red_horse_left)
 
-  red_horse_right = Horse()
-  red_horse_right.set_player('red')
-  red_horse_right.move_piece('a1')
-  new_game.append(red_horse_right)
+  # red_horse_right = Horse()
+  # red_horse_right.set_player('red')
+  # red_horse_right.move_piece('c3')
+  # new_game.append(red_horse_right)
 
 
   # BLACK SIDE
@@ -706,7 +676,7 @@ def NewGame():
   #
   # red_elephant_left = Elephant()
   # red_elephant_left.set_player('black')
-  # red_elephant_left.move_piece('c10')
+  # red_elephant_left.move_piece('a2')
   # new_game.append(red_elephant_left)
   #
   # red_elephant_right = Elephant()
@@ -729,7 +699,7 @@ def NewGame():
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-# xi.make_move('b10', 'c8')
+# xi.make_move('c3', 'a2')
 # print()
 # xi.get_piece_data()
 # xi.make_move('e8', 'c6')
