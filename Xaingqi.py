@@ -85,6 +85,8 @@ class Xiangqi:
         i.elephant_legal_moves(piece, self._board, self._active_pieces)
       elif i.get_piece_name() == 'HORSE':
         i.horse_legal_moves(piece, self._board, self._active_pieces)
+      elif i.get_piece_name() == 'CHARIOT':
+        i.chariot_legal_moves(piece, self._board, self._active_pieces)
 
     self.update_dict(self._active_pieces)
     return True
@@ -421,7 +423,6 @@ class Elephant(Pieces):
 
   def elephant_legal_moves(self, piece, board, piece_list):
 
-    color = piece.get_player()  # Set to current player.
     piece.clear_pool()  # Clear move pool.
 
     # Set the index for row and column to the pieces current location for reference.
@@ -430,58 +431,64 @@ class Elephant(Pieces):
     # Up left
     try:
       temp = False
-      # Set a to the left square, then check to see if any pieces are currently in that square, illegal move.
+      # Set potential move to up left square.
       a = board[index_row - 1][index_column - 1]
       for i in piece_list:
         if i.get_piece_location() == a and i != piece:
           temp = True
           break
-      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      # If there is no piece in the way set potential location to up left square from a
       if temp is not True:
         b = board[index_row - 2][index_column - 2]
         if (index_row - 2) >= 0 and (index_column - 2) >= 0:
           piece.add_move_to_pool(b)
     except:
       pass
+
+    # Up - right
     try:
       temp_2 = False
-      # Set a to the left square, then check to see if any pieces are currently in that square.
+      # Set potential move to up right square.
       c = board[index_row - 1][index_column + 1]
       for i in piece_list:
         if i.get_piece_location() == c and i != piece:
           temp_2 = True
           break
-      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      # If there is no piece in the way set potential location to up right square from c
       if temp_2 is not True:
         d = board[index_row - 2][index_column + 2]
         if (index_row - 2) >= 0 and (index_column + 2) in range(0, 10):
           piece.add_move_to_pool(d)
     except:
       pass
+
+    # Down - left
     try:
       temp_3 = False
-      # Set a to the left square, then check to see if any pieces are currently in that square.
+      # Set potential move to down left square.
       e = board[index_row + 1][index_column - 1]
       for i in piece_list:
         if i.get_piece_location() == e and i != piece:
           temp_3 = True
           break
-      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      # If there is no piece in the way set potential location to down left square from e
       if temp_3 is not True:
         f = board[index_row + 2][index_column - 2]
         if (index_row + 2) in range(0, 10) and (index_column - 2) in range(0, 10):
           piece.add_move_to_pool(f)
     except:
       pass
+
+    # Down - right
     try:
       temp_4 = False
-      # Set a to the left square, then check to see if any pieces are currently in that square.
+      # Set potential move to down right square.
       g = board[index_row + 1][index_column + 1]
       for i in piece_list:
         if i.get_piece_location() == g and i != piece:
           temp_4 = True
           break
-      # If there is no piece in the left square, check to see if the index of the move wraps around the board.
+      # If there is no piece in the way set potential location to down right square from g
       if temp_4 is not True:
         h = board[index_row + 2][index_column + 2]
         if (index_row + 2) in range(0, 10) and (index_column + 2) in range(0, 10):
@@ -501,7 +508,7 @@ class Horse(Pieces):
     self._name = 'HORSE'
 
   def horse_legal_moves(self, piece, board, piece_list):
-    color = piece.get_player()  # Set to current player.
+
     piece.clear_pool()  # Clear move pool.
 
     # Set the index for row and column to the pieces current location for reference.
@@ -625,6 +632,30 @@ class Horse(Pieces):
         if o.get_player() == piece.get_player() and o.get_piece_location() == n:
           piece.delete_move(n)
 
+class Chariot(Pieces):
+
+  def __init__(self):
+    super().__init__()
+    self._name = 'CHARIOT'
+
+  def chariot_legal_moves(self, piece, board, piece_list):
+
+    piece.clear_pool()  # Clear move pool.
+
+    # Set the index for row and column to the pieces current location for reference.
+    index_column, index_row = self.get_index_of_location(piece, board)
+
+    try:
+      for i in range(0, 10):
+        a = board[index_row + i][index_column]
+        for k in piece_list:
+          if a != k.get_piece_location():
+            piece.add_move_to_pool(a)
+    except:
+      print("Broken")
+      pass
+
+
 def NewGame():
   """
   This will load all the initial pieces to the correct locations for a new game. Returns a list of all pre-loaded pieces.
@@ -647,25 +678,35 @@ def NewGame():
   # red_advisor_right.move_piece('f1')
   # new_game.append(red_advisor_right)
 
-  red_elephant_left = Elephant()
-  red_elephant_left.set_player('red')
-  red_elephant_left.move_piece('g8')
-  new_game.append(red_elephant_left)
+  # red_elephant_left = Elephant()
+  # red_elephant_left.set_player('red')
+  # red_elephant_left.move_piece('c1')
+  # new_game.append(red_elephant_left)
 
   # red_elephant_right = Elephant()
   # red_elephant_right.set_player('red')
   # red_elephant_right.move_piece('g1')
   # new_game.append(red_elephant_right)
 
-  red_horse_left = Horse()
-  red_horse_left.set_player('red')
-  red_horse_left.move_piece('e6')
-  new_game.append(red_horse_left)
+  # red_horse_left = Horse()
+  # red_horse_left.set_player('red')
+  # red_horse_left.move_piece('b1')
+  # new_game.append(red_horse_left)
 
   # red_horse_right = Horse()
   # red_horse_right.set_player('red')
-  # red_horse_right.move_piece('c3')
+  # red_horse_right.move_piece('h1')
   # new_game.append(red_horse_right)
+
+  red_chariot_right = Chariot()
+  red_chariot_right.set_player('red')
+  red_chariot_right.move_piece('a1')
+  new_game.append(red_chariot_right)
+
+  red_chariot_right = Chariot()
+  red_chariot_right.set_player('red')
+  red_chariot_right.move_piece('i1')
+  new_game.append(red_chariot_right)
 
 
   # BLACK SIDE
@@ -684,25 +725,35 @@ def NewGame():
   # black_advisor_right.move_piece('f10')
   # new_game.append(black_advisor_right)
   #
-  # red_elephant_left = Elephant()
-  # red_elephant_left.set_player('black')
-  # red_elephant_left.move_piece('a2')
-  # new_game.append(red_elephant_left)
+  # black_elephant_left = Elephant()
+  # black_elephant_left.set_player('black')
+  # black_elephant_left.move_piece('a2')
+  # new_game.append(black_elephant_left)
   #
-  # red_elephant_right = Elephant()
-  # red_elephant_right.set_player('black')
-  # red_elephant_right.move_piece('g10')
-  # new_game.append(red_elephant_right)
+  # black_elephant_right = Elephant()
+  # black_elephant_right.set_player('black')
+  # black_elephant_right.move_piece('g10')
+  # new_game.append(black_elephant_right)
   #
-  # red_horse_left = Horse()
-  # red_horse_left.set_player('black')
-  # red_horse_left.move_piece('b10')
-  # new_game.append(red_horse_left)
+  # black_horse_left = Horse()
+  # black_horse_left.set_player('black')
+  # black_horse_left.move_piece('b10')
+  # new_game.append(black_horse_left)
   #
-  # red_horse_right = Horse()
-  # red_horse_right.set_player('black')
-  # red_horse_right.move_piece('h10')
-  # new_game.append(red_horse_right)
+  # black_horse_right = Horse()
+  # black_horse_right.set_player('black')
+  # black_horse_right.move_piece('h10')
+  # new_game.append(black_horse_right)
+
+  black_chariot_right = Chariot()
+  black_chariot_right.set_player('red')
+  black_chariot_right.move_piece('a10')
+  new_game.append(black_chariot_right)
+
+  black_chariot_right = Chariot()
+  black_chariot_right.set_player('red')
+  black_chariot_right.move_piece('i10')
+  new_game.append(black_chariot_right)
 
   return new_game
 
