@@ -489,6 +489,11 @@ class Elephant(Pieces):
     except:
       pass
 
+    for n in piece.get_legal_moves():
+      for o in piece_list:
+        if o.get_player() == piece.get_player() and o.get_piece_location() == n:
+          piece.delete_move(n)
+
 class Horse(Pieces):
 
   def __init__(self):
@@ -615,6 +620,11 @@ class Horse(Pieces):
     except:
       pass
 
+    for n in piece.get_legal_moves():
+      for o in piece_list:
+        if o.get_player() == piece.get_player() and o.get_piece_location() == n:
+          piece.delete_move(n)
+
 def NewGame():
   """
   This will load all the initial pieces to the correct locations for a new game. Returns a list of all pre-loaded pieces.
@@ -649,7 +659,7 @@ def NewGame():
 
   red_horse_left = Horse()
   red_horse_left.set_player('red')
-  red_horse_left.move_piece('h9')
+  red_horse_left.move_piece('e6')
   new_game.append(red_horse_left)
 
   # red_horse_right = Horse()
