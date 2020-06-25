@@ -645,12 +645,22 @@ class Chariot(Pieces):
     # Set the index for row and column to the pieces current location for reference.
     index_column, index_row = self.get_index_of_location(piece, board)
 
+    move_pool = []
     try:
-      for i in range(0, 10):
+      i = 1
+      index_break = False
+      while index_row + i < 10 and index_break is False:
         a = board[index_row + i][index_column]
         for k in piece_list:
-          if a != k.get_piece_location():
-            piece.add_move_to_pool(a)
+          if a == k.get_piece_location():
+            if a in piece.get_legal_moves():
+              piece.delete_move(a)
+            index_break = True
+            break
+          else:
+            if a != k.get_piece_location() and a not in piece.get_legal_moves() and a != piece.get_piece_location():
+              piece.add_move_to_pool(a)
+              i += 1
     except:
       print("Broken")
       pass
@@ -705,7 +715,7 @@ def NewGame():
 
   red_chariot_right = Chariot()
   red_chariot_right.set_player('red')
-  red_chariot_right.move_piece('i1')
+  red_chariot_right.move_piece('a4')
   new_game.append(red_chariot_right)
 
 
