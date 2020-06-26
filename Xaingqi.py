@@ -645,7 +645,7 @@ class Chariot(Pieces):
     # Set the index for row and column to the pieces current location for reference.
     index_column, index_row = self.get_index_of_location(piece, board)
 
-    move_pool = []
+    # Down column
     try:
       i = 1
       index_break = False
@@ -653,7 +653,7 @@ class Chariot(Pieces):
         a = board[index_row + i][index_column]
         for k in piece_list:
           if a == k.get_piece_location():
-            if a in piece.get_legal_moves():
+            if a in piece.get_legal_moves() and a.get_player() == piece.get_player():
               piece.delete_move(a)
             index_break = True
             break
@@ -665,6 +665,25 @@ class Chariot(Pieces):
       print("Broken")
       pass
 
+    # Up column
+    try:
+      i = 1
+      index_break = False
+      while index_row - i >= 0 and index_break is False:
+        a = board[index_row - i][index_column]
+        for k in piece_list:
+          if a == k.get_piece_location():
+            if a in piece.get_legal_moves() and a.get_player() == piece.get_player():
+              piece.delete_move(a)
+            index_break = True
+            break
+          else:
+            if a != k.get_piece_location() and a not in piece.get_legal_moves() and a != piece.get_piece_location():
+              piece.add_move_to_pool(a)
+              i += 1
+    except:
+      print("Broken")
+      pass
 
 def NewGame():
   """
@@ -710,13 +729,13 @@ def NewGame():
 
   red_chariot_right = Chariot()
   red_chariot_right.set_player('red')
-  red_chariot_right.move_piece('a1')
+  red_chariot_right.move_piece('a7')
   new_game.append(red_chariot_right)
 
-  red_chariot_right = Chariot()
-  red_chariot_right.set_player('red')
-  red_chariot_right.move_piece('a4')
-  new_game.append(red_chariot_right)
+  # red_chariot_right = Chariot()
+  # red_chariot_right.set_player('red')
+  # red_chariot_right.move_piece('a4')
+  # new_game.append(red_chariot_right)
 
 
   # BLACK SIDE
@@ -755,22 +774,22 @@ def NewGame():
   # black_horse_right.move_piece('h10')
   # new_game.append(black_horse_right)
 
-  black_chariot_right = Chariot()
-  black_chariot_right.set_player('red')
-  black_chariot_right.move_piece('a10')
-  new_game.append(black_chariot_right)
+  # black_chariot_right = Chariot()
+  # black_chariot_right.set_player('black')
+  # black_chariot_right.move_piece('a10')
+  # new_game.append(black_chariot_right)
 
-  black_chariot_right = Chariot()
-  black_chariot_right.set_player('red')
-  black_chariot_right.move_piece('i10')
-  new_game.append(black_chariot_right)
+  # black_chariot_right = Chariot()
+  # black_chariot_right.set_player('black')
+  # black_chariot_right.move_piece('a4')
+  # new_game.append(black_chariot_right)
 
   return new_game
 
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-# xi.make_move('c3', 'a2')
+# xi.make_move('a1', 'a4')
 # print()
 # xi.get_piece_data()
 # xi.make_move('e8', 'c6')
