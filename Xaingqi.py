@@ -647,6 +647,95 @@ class Chariot(Pieces):
     # Set the index for row and column to the pieces current location for reference.
     index_column, index_row = self.get_index_of_location(piece, board)
 
+    red_move_pool = []
+    black_move_pool = []
+
+    for x in piece_list:
+      if x.get_player() == 'red':
+        red_move_pool.append(x.get_piece_location())
+      else:
+        black_move_pool.append(x.get_piece_location())
+
+    # Down column
+    try:
+      i = 1
+      index_break = False
+      while index_row + i < 10 and index_break is False:
+        a = board[index_row + i][index_column]
+        if a in red_move_pool and piece.get_player() == 'red':
+          index_break = True
+        elif a in black_move_pool and piece.get_player() == 'black':
+          index_break = True
+        else:
+          piece.add_move_to_pool(a)
+          i += 1
+    except:
+      print("Broken")
+      pass
+
+    # Up column
+    try:
+      i = 1
+      index_break = False
+      while index_row - i >= 0 and index_break is False:
+        a = board[index_row - i][index_column]
+        if a in red_move_pool and piece.get_player() == 'red':
+          index_break = True
+        elif a in black_move_pool and piece.get_player() == 'black':
+          index_break = True
+        else:
+          piece.add_move_to_pool(a)
+          i += 1
+    except:
+      print("Broken")
+      pass
+
+    # Left row
+    try:
+      i = 1
+      index_break = False
+      while index_column - i >= 0 and index_break is False:
+        a = board[index_row][index_column - i]
+        if a in red_move_pool and piece.get_player() == 'red':
+          index_break = True
+        elif a in black_move_pool and piece.get_player() == 'black':
+          index_break = True
+        else:
+          piece.add_move_to_pool(a)
+          i += 1
+    except:
+      print("Broken")
+      pass
+
+    # Right
+    try:
+      i = 1
+      index_break = False
+      while index_column + i < 10 and index_break is False:
+        a = board[index_row][index_column + i]
+        if a in red_move_pool and piece.get_player() == 'red':
+          index_break = True
+        elif a in black_move_pool and piece.get_player() == 'black':
+          index_break = True
+        else:
+          piece.add_move_to_pool(a)
+          i += 1
+    except:
+      print("Broken")
+      pass
+
+class Cannon(Pieces):
+
+  def __init__(self):
+    super().__init__()
+    self._name = 'CANNON'
+
+  def cannon_legal_moves(self, piece, board, piece_list):
+    piece.clear_pool()  # Clear move pool.
+
+    # Set the index for row and column to the pieces current location for reference.
+    index_column, index_row = self.get_index_of_location(piece, board)
+
     # Down column
     try:
       i = 1
@@ -727,15 +816,6 @@ class Chariot(Pieces):
       print("Broken")
       pass
 
-class Cannon(Pieces):
-
-  def __init__(self):
-    super().__init__()
-    self._name = 'CANNON'
-
-  def cannon_legal_moves(self):
-    pass
-
 def NewGame():
   """
   This will load all the initial pieces to the correct locations for a new game. Returns a list of all pre-loaded pieces.
@@ -783,10 +863,20 @@ def NewGame():
   red_chariot_right.move_piece('c7')
   new_game.append(red_chariot_right)
 
-  # red_chariot_right = Chariot()
-  # red_chariot_right.set_player('red')
-  # red_chariot_right.move_piece('a4')
-  # new_game.append(red_chariot_right)
+  red_chariot_left = Chariot()
+  red_chariot_left.set_player('red')
+  red_chariot_left.move_piece('f7')
+  new_game.append(red_chariot_left)
+
+  # red_cannon_right = Cannon()
+  # red_cannon_right.set_player('red')
+  # red_cannon_right.move_piece('c1')
+  # new_game.append(red_cannon_right)
+
+  # red_cannon_left = Cannon()
+  # red_cannon_left.set_player('red')
+  # red_cannon_left.move_piece('c7')
+  # new_game.append(red_cannon_left)
 
 
   # BLACK SIDE
@@ -827,13 +917,23 @@ def NewGame():
 
   black_chariot_right = Chariot()
   black_chariot_right.set_player('black')
-  black_chariot_right.move_piece('b7')
+  black_chariot_right.move_piece('e7')
   new_game.append(black_chariot_right)
 
   # black_chariot_right = Chariot()
   # black_chariot_right.set_player('black')
   # black_chariot_right.move_piece('a4')
   # new_game.append(black_chariot_right)
+
+  # black_cannon_right = Cannon()
+  # black_cannon_right.set_player('black')
+  # black_cannon_right.move_piece('c9')
+  # new_game.append(black_cannon_right)
+
+  # black_cannon_left = Cannon()
+  # black_cannon_left.set_player('black')
+  # black_cannon_left.move_piece('a10')
+  # new_game.append(black_cannon_left)
 
   return new_game
 
