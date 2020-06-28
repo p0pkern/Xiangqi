@@ -87,6 +87,8 @@ class Xiangqi:
         i.horse_legal_moves(piece, self._board, self._active_pieces)
       elif i.get_piece_name() == 'CHARIOT':
         i.chariot_legal_moves(piece, self._board, self._active_pieces)
+      elif i.get_piece_name() == 'CANNON':
+        i.cannon_legal_moves(piece, self._board, self._active_pieces)
 
     self.update_dict(self._active_pieces)
     return True
@@ -685,6 +687,55 @@ class Chariot(Pieces):
       print("Broken")
       pass
 
+    # Left row
+    try:
+      i = 1
+      index_break = False
+      while index_column - i >= 0 and index_break is False:
+        a = board[index_row][index_column - i]
+        for k in piece_list:
+          if a == k.get_piece_location():
+            if a in piece.get_legal_moves() and a.get_player() == piece.get_player():
+              piece.delete_move(a)
+            index_break = True
+            break
+          else:
+            if a != k.get_piece_location() and a not in piece.get_legal_moves() and a != piece.get_piece_location():
+              piece.add_move_to_pool(a)
+              i += 1
+    except:
+      print("Broken")
+      pass
+
+    # Right
+    try:
+      i = 1
+      index_break = False
+      while index_column + i < 10 and index_break is False:
+        a = board[index_row][index_column + i]
+        for k in piece_list:
+          if a == k.get_piece_location():
+            if a in piece.get_legal_moves() and a.get_player() == piece.get_player():
+              piece.delete_move(a)
+            index_break = True
+            break
+          else:
+            if a != k.get_piece_location() and a not in piece.get_legal_moves() and a != piece.get_piece_location():
+              piece.add_move_to_pool(a)
+              i += 1
+    except:
+      print("Broken")
+      pass
+
+class Cannon(Pieces):
+
+  def __init__(self):
+    super().__init__()
+    self._name = 'CANNON'
+
+  def cannon_legal_moves(self):
+    pass
+
 def NewGame():
   """
   This will load all the initial pieces to the correct locations for a new game. Returns a list of all pre-loaded pieces.
@@ -729,7 +780,7 @@ def NewGame():
 
   red_chariot_right = Chariot()
   red_chariot_right.set_player('red')
-  red_chariot_right.move_piece('a7')
+  red_chariot_right.move_piece('c7')
   new_game.append(red_chariot_right)
 
   # red_chariot_right = Chariot()
@@ -774,10 +825,10 @@ def NewGame():
   # black_horse_right.move_piece('h10')
   # new_game.append(black_horse_right)
 
-  # black_chariot_right = Chariot()
-  # black_chariot_right.set_player('black')
-  # black_chariot_right.move_piece('a10')
-  # new_game.append(black_chariot_right)
+  black_chariot_right = Chariot()
+  black_chariot_right.set_player('black')
+  black_chariot_right.move_piece('b7')
+  new_game.append(black_chariot_right)
 
   # black_chariot_right = Chariot()
   # black_chariot_right.set_player('black')
