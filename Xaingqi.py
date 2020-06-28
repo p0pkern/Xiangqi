@@ -978,8 +978,6 @@ class Soldier(Pieces):
         except:
           pass
 
-
-
 def NewGame():
   """
   This will load all the initial pieces to the correct locations for a new game. Returns a list of all pre-loaded pieces.
