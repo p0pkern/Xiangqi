@@ -736,84 +736,186 @@ class Cannon(Pieces):
     # Set the index for row and column to the pieces current location for reference.
     index_column, index_row = self.get_index_of_location(piece, board)
 
+    red_move_pool = []
+    black_move_pool = []
+
+    for x in piece_list:
+      if x != piece:
+        if x.get_player() == 'red':
+          red_move_pool.append(x.get_piece_location())
+        else:
+          black_move_pool.append(x.get_piece_location())
+
     # Down column
     try:
       i = 1
       index_break = False
+      jump_move = None
       while index_row + i < 10 and index_break is False:
         a = board[index_row + i][index_column]
-        for k in piece_list:
-          if a == k.get_piece_location():
-            if a in piece.get_legal_moves() and a.get_player() == piece.get_player():
-              piece.delete_move(a)
-            index_break = True
-            break
-          else:
-            if a != k.get_piece_location() and a not in piece.get_legal_moves() and a != piece.get_piece_location():
-              piece.add_move_to_pool(a)
-              i += 1
+        if a in red_move_pool or a in black_move_pool:
+          for b in piece_list:
+            if b.get_piece_location() == a:
+              jump_move = b
+          index_break = True
+        else:
+          piece.add_move_to_pool(a)
+          i += 1
+
+      try:
+        if jump_move is not None:
+          jump_index_column, jump_index_row = self.get_index_of_location(jump_move, board)
+
+          c = 1
+          jump_index_break = False
+          while jump_index_row + c < 10 and jump_index_break is False:
+            d = board[jump_index_row + c][jump_index_column]
+            if d in red_move_pool and piece.get_player() == 'red':
+              jump_index_break = True
+            elif d in black_move_pool and piece.get_player() == 'black':
+              jump_index_break = True
+            else:
+              for e in piece_list:
+                if d == e.get_piece_location():
+                  if e.get_player() != piece.get_player():
+                    piece.add_move_to_pool(d)
+                    jump_index_break = True
+              c += 1
+      except:
+        print("Jump index failed")
+        pass
+
     except:
-      print("Broken")
+      print("Broken 1")
       pass
 
     # Up column
     try:
       i = 1
       index_break = False
+      jump_move = None
       while index_row - i >= 0 and index_break is False:
         a = board[index_row - i][index_column]
-        for k in piece_list:
-          if a == k.get_piece_location():
-            if a in piece.get_legal_moves() and a.get_player() == piece.get_player():
-              piece.delete_move(a)
-            index_break = True
-            break
-          else:
-            if a != k.get_piece_location() and a not in piece.get_legal_moves() and a != piece.get_piece_location():
-              piece.add_move_to_pool(a)
-              i += 1
+        if a in red_move_pool or a in black_move_pool:
+          for b in piece_list:
+            if b.get_piece_location() == a:
+              jump_move = b
+          index_break = True
+        else:
+          piece.add_move_to_pool(a)
+          i += 1
+
+      try:
+        if jump_move is not None:
+          jump_index_column, jump_index_row = self.get_index_of_location(jump_move, board)
+
+          c = 1
+          jump_index_break = False
+          while jump_index_row - c < 10 and jump_index_break is False:
+            d = board[jump_index_row - c][jump_index_column]
+            if d in red_move_pool and piece.get_player() == 'red':
+              jump_index_break = True
+            elif d in black_move_pool and piece.get_player() == 'black':
+              jump_index_break = True
+            else:
+              for e in piece_list:
+                if d == e.get_piece_location():
+                  if e.get_player() != piece.get_player():
+                    piece.add_move_to_pool(d)
+                    jump_index_break = True
+              c += 1
+      except:
+        print("Jump index failed")
+        pass
+
     except:
-      print("Broken")
+      print("Broken 1")
       pass
 
-    # Left row
+    # # Left row
     try:
       i = 1
       index_break = False
+      jump_move = None
       while index_column - i >= 0 and index_break is False:
         a = board[index_row][index_column - i]
-        for k in piece_list:
-          if a == k.get_piece_location():
-            if a in piece.get_legal_moves() and a.get_player() == piece.get_player():
-              piece.delete_move(a)
-            index_break = True
-            break
-          else:
-            if a != k.get_piece_location() and a not in piece.get_legal_moves() and a != piece.get_piece_location():
-              piece.add_move_to_pool(a)
-              i += 1
+        if a in red_move_pool or a in black_move_pool:
+          for b in piece_list:
+            if b.get_piece_location() == a:
+              jump_move = b
+          index_break = True
+        else:
+          piece.add_move_to_pool(a)
+          i += 1
+
+      try:
+        if jump_move is not None:
+          jump_index_column, jump_index_row = self.get_index_of_location(jump_move, board)
+
+          c = 1
+          jump_index_break = False
+          while jump_index_column - c >= 0 and jump_index_break is False:
+            d = board[jump_index_row][jump_index_column - c]
+            if d in red_move_pool and piece.get_player() == 'red':
+              jump_index_break = True
+            elif d in black_move_pool and piece.get_player() == 'black':
+              jump_index_break = True
+            else:
+              for e in piece_list:
+                if d == e.get_piece_location():
+                  if e.get_player() != piece.get_player():
+                    piece.add_move_to_pool(d)
+                    jump_index_break = True
+              c += 1
+      except:
+        print("Jump index failed")
+        pass
+
     except:
-      print("Broken")
+      print("Broken 1")
       pass
 
-    # Right
+    # Right Row
     try:
       i = 1
       index_break = False
+      jump_move = None
       while index_column + i < 10 and index_break is False:
         a = board[index_row][index_column + i]
-        for k in piece_list:
-          if a == k.get_piece_location():
-            if a in piece.get_legal_moves() and a.get_player() == piece.get_player():
-              piece.delete_move(a)
-            index_break = True
-            break
-          else:
-            if a != k.get_piece_location() and a not in piece.get_legal_moves() and a != piece.get_piece_location():
-              piece.add_move_to_pool(a)
-              i += 1
+        if a in red_move_pool or a in black_move_pool:
+          for b in piece_list:
+            if b.get_piece_location() == a:
+              jump_move = b
+          index_break = True
+        else:
+          piece.add_move_to_pool(a)
+          i += 1
+
+      try:
+        if jump_move is not None:
+          jump_index_column, jump_index_row = self.get_index_of_location(jump_move, board)
+
+          c = 1
+          jump_index_break = False
+          while jump_index_column + c < 10 and jump_index_break is False:
+            d = board[jump_index_row][jump_index_column + c]
+            if d in red_move_pool and piece.get_player() == 'red':
+              jump_index_break = True
+            elif d in black_move_pool and piece.get_player() == 'black':
+              jump_index_break = True
+            else:
+              for e in piece_list:
+                if d == e.get_piece_location():
+                  if e.get_player() != piece.get_player():
+                    piece.add_move_to_pool(d)
+                    jump_index_break = True
+              c += 1
+      except:
+        print("Jump index failed")
+        pass
+
     except:
-      print("Broken")
+      print("Broken 1")
       pass
 
 def NewGame():
@@ -858,25 +960,25 @@ def NewGame():
   # red_horse_right.move_piece('h1')
   # new_game.append(red_horse_right)
 
-  red_chariot_right = Chariot()
-  red_chariot_right.set_player('red')
-  red_chariot_right.move_piece('c7')
-  new_game.append(red_chariot_right)
+  # red_chariot_right = Chariot()
+  # red_chariot_right.set_player('red')
+  # red_chariot_right.move_piece('c7')
+  # new_game.append(red_chariot_right)
+  #
+  # red_chariot_left = Chariot()
+  # red_chariot_left.set_player('red')
+  # red_chariot_left.move_piece('f7')
+  # new_game.append(red_chariot_left)
 
-  red_chariot_left = Chariot()
-  red_chariot_left.set_player('red')
-  red_chariot_left.move_piece('f7')
-  new_game.append(red_chariot_left)
+  red_cannon_right = Cannon()
+  red_cannon_right.set_player('red')
+  red_cannon_right.move_piece('b10')
+  new_game.append(red_cannon_right)
 
-  # red_cannon_right = Cannon()
-  # red_cannon_right.set_player('red')
-  # red_cannon_right.move_piece('c1')
-  # new_game.append(red_cannon_right)
-
-  # red_cannon_left = Cannon()
-  # red_cannon_left.set_player('red')
-  # red_cannon_left.move_piece('c7')
-  # new_game.append(red_cannon_left)
+  red_cannon_left = Cannon()
+  red_cannon_left.set_player('red')
+  red_cannon_left.move_piece('d10')
+  new_game.append(red_cannon_left)
 
 
   # BLACK SIDE
@@ -899,41 +1001,41 @@ def NewGame():
   # black_elephant_left.set_player('black')
   # black_elephant_left.move_piece('a2')
   # new_game.append(black_elephant_left)
-  #
+
   # black_elephant_right = Elephant()
   # black_elephant_right.set_player('black')
   # black_elephant_right.move_piece('g10')
   # new_game.append(black_elephant_right)
-  #
+
   # black_horse_left = Horse()
   # black_horse_left.set_player('black')
   # black_horse_left.move_piece('b10')
   # new_game.append(black_horse_left)
-  #
+
   # black_horse_right = Horse()
   # black_horse_right.set_player('black')
   # black_horse_right.move_piece('h10')
   # new_game.append(black_horse_right)
 
-  black_chariot_right = Chariot()
-  black_chariot_right.set_player('black')
-  black_chariot_right.move_piece('e7')
-  new_game.append(black_chariot_right)
+  # black_chariot_right = Chariot()
+  # black_chariot_right.set_player('black')
+  # black_chariot_right.move_piece('e7')
+  # new_game.append(black_chariot_right)
 
   # black_chariot_right = Chariot()
   # black_chariot_right.set_player('black')
   # black_chariot_right.move_piece('a4')
   # new_game.append(black_chariot_right)
 
-  # black_cannon_right = Cannon()
-  # black_cannon_right.set_player('black')
-  # black_cannon_right.move_piece('c9')
-  # new_game.append(black_cannon_right)
+  black_cannon_right = Cannon()
+  black_cannon_right.set_player('black')
+  black_cannon_right.move_piece('h10')
+  new_game.append(black_cannon_right)
 
-  # black_cannon_left = Cannon()
-  # black_cannon_left.set_player('black')
-  # black_cannon_left.move_piece('a10')
-  # new_game.append(black_cannon_left)
+  black_cannon_left = Cannon()
+  black_cannon_left.set_player('black')
+  black_cannon_left.move_piece('i10')
+  new_game.append(black_cannon_left)
 
   return new_game
 
