@@ -106,12 +106,21 @@ class Xiangqi:
 
     def set_player_turn(self):
         """
-    Change the current players turn.
-    """
+        Change the current players turn.
+        """
         if self._player_turn == 'red':
             self._player_turn = 'black'
         else:
             self._player_turn = 'red'
+
+    def get_player_turn(self):
+        return self._player_turn
+
+    def set_game_state(self, state):
+        self._game_state = state
+
+    def get_game_state(self):
+        return self._game_state
 
     def make_move(self, start, end):
         """
@@ -131,7 +140,9 @@ class Xiangqi:
             return False
 
         # Check what game state is.
-        # TODO - Add stuff to check what the current game state is.
+        if self.get_game_state() != 'UNFINISHED':
+            print("Game is not unfinished")
+            return False
 
         # Verify start and end are within the board
         if self.legal_location_check(start) and self.legal_location_check(end):
@@ -144,6 +155,10 @@ class Xiangqi:
 
             # Check to see that a piece is actually selected.
             if piece is None:
+                return False
+
+            if piece.get_player() != self.get_player_turn():
+                print("This piece cannot move this turn")
                 return False
 
             # Verify legal move is in move pool.
@@ -167,6 +182,8 @@ class Xiangqi:
                     self._active_pieces.remove(piece_2)
                     piece.move_piece(end)
                     self.update_move_pool(self._active_pieces)
+                    self.set_player_turn()
+                    print(self.get_player_turn())
                     return True
                 else:
                     return False
@@ -175,6 +192,8 @@ class Xiangqi:
             else:
                 piece.move_piece(end)
                 self.update_move_pool(self._active_pieces)
+                self.set_player_turn()
+                print(self.get_player_turn())
                 return True
         else:
             return False
@@ -297,10 +316,8 @@ class General(Pieces):
 
         # Each General can not leave a specific square. This is all the potential moves that a General could make in the
         # confines of the square.
-        if color == 'red':
-            move_pool_1 = ['d1', 'd2', 'd3', 'e1', 'e2', 'e3', 'f1', 'f2', 'f3']
-        elif color == 'black':
-            move_pool_2 = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
+        move_pool_1 = ['d1', 'd2', 'd3', 'e1', 'e2', 'e3', 'f1', 'f2', 'f3']
+        move_pool_2 = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
 
         # Set the index for row and column to the pieces current location for reference.
         index_column, index_row = self.get_index_of_location(piece, board)
@@ -1167,9 +1184,9 @@ def NewGame():
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-# xi.make_move('a1', 'a4')
-# print()
-# xi.get_piece_data()
+xi.make_move('a7', 'a6')
+print()
+xi.get_piece_data()
 # xi.make_move('e8', 'c6')
 # print()
 # xi.get_piece_data()
