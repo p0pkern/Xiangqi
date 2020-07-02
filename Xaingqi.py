@@ -78,9 +78,7 @@ class Xiangqi:
     """
         for i in piece:
             piece = i
-            if i.get_piece_name() == 'GENERAL':
-                i.general_legal_moves(piece, self._board, self._active_pieces)
-            elif i.get_piece_name() == 'ADVISOR':
+            if i.get_piece_name() == 'ADVISOR':
                 i.advisor_legal_moves(piece, self._board, self._active_pieces)
             elif i.get_piece_name() == 'ELEPHANT':
                 i.elephant_legal_moves(piece, self._board, self._active_pieces)
@@ -92,6 +90,8 @@ class Xiangqi:
                 i.cannon_legal_moves(piece, self._board, self._active_pieces)
             elif i.get_piece_name() == 'SOLDIER':
                 i.soldier_legal_moves(piece, self._board, self._active_pieces)
+            elif i.get_piece_name() == 'GENERAL':
+                i.general_legal_moves(piece, self._board, self._active_pieces)
 
         self.update_dict(self._active_pieces)
         return True
@@ -440,9 +440,10 @@ class Advisor(Pieces):
 
         for j in piece_list:
             if j.get_player() == color and j.get_piece_location() in piece.get_legal_moves():
+                piece.delete_move(j.get_piece_location())
+            if piece.get_piece_location() in j.get_legal_moves() and j.get_player() != piece.get_player():
                 remove = j.get_piece_location()
                 piece.delete_move(remove)
-        return True
 
 
 class Elephant(Pieces):
@@ -1032,151 +1033,151 @@ def NewGame():
     red_advisor_right.move_piece('f1')
     new_game.append(red_advisor_right)
 
-    red_elephant_left = Elephant()
-    red_elephant_left.set_player('red')
-    red_elephant_left.move_piece('c1')
-    new_game.append(red_elephant_left)
-
-    red_elephant_right = Elephant()
-    red_elephant_right.set_player('red')
-    red_elephant_right.move_piece('g1')
-    new_game.append(red_elephant_right)
-
-    red_horse_left = Horse()
-    red_horse_left.set_player('red')
-    red_horse_left.move_piece('b1')
-    new_game.append(red_horse_left)
-
-    red_horse_right = Horse()
-    red_horse_right.set_player('red')
-    red_horse_right.move_piece('h1')
-    new_game.append(red_horse_right)
-
-    red_chariot_right = Chariot()
-    red_chariot_right.set_player('red')
-    red_chariot_right.move_piece('i1')
-    new_game.append(red_chariot_right)
-
-    red_chariot_left = Chariot()
-    red_chariot_left.set_player('red')
-    red_chariot_left.move_piece('a1')
-    new_game.append(red_chariot_left)
-
-    red_cannon_right = Cannon()
-    red_cannon_right.set_player('red')
-    red_cannon_right.move_piece('b3')
-    new_game.append(red_cannon_right)
-
-    red_cannon_left = Cannon()
-    red_cannon_left.set_player('red')
-    red_cannon_left.move_piece('h3')
-    new_game.append(red_cannon_left)
-
-    red_soldier_one = Soldier()
-    red_soldier_one.set_player('red')
-    red_soldier_one.move_piece('a4')
-    new_game.append(red_soldier_one)
-
-    red_soldier_two = Soldier()
-    red_soldier_two.set_player('red')
-    red_soldier_two.move_piece('c4')
-    new_game.append(red_soldier_two)
-
-    red_soldier_three = Soldier()
-    red_soldier_three.set_player('red')
-    red_soldier_three.move_piece('e4')
-    new_game.append(red_soldier_three)
-
-    red_soldier_four = Soldier()
-    red_soldier_four.set_player('red')
-    red_soldier_four.move_piece('g4')
-    new_game.append(red_soldier_four)
-
-    red_soldier_five = Soldier()
-    red_soldier_five.set_player('red')
-    red_soldier_five.move_piece('i4')
-    new_game.append(red_soldier_five)
+    # red_elephant_left = Elephant()
+    # red_elephant_left.set_player('red')
+    # red_elephant_left.move_piece('c1')
+    # new_game.append(red_elephant_left)
+    #
+    # red_elephant_right = Elephant()
+    # red_elephant_right.set_player('red')
+    # red_elephant_right.move_piece('g1')
+    # new_game.append(red_elephant_right)
+    #
+    # red_horse_left = Horse()
+    # red_horse_left.set_player('red')
+    # red_horse_left.move_piece('b1')
+    # new_game.append(red_horse_left)
+    #
+    # red_horse_right = Horse()
+    # red_horse_right.set_player('red')
+    # red_horse_right.move_piece('h1')
+    # new_game.append(red_horse_right)
+    #
+    # red_chariot_right = Chariot()
+    # red_chariot_right.set_player('red')
+    # red_chariot_right.move_piece('i1')
+    # new_game.append(red_chariot_right)
+    #
+    # red_chariot_left = Chariot()
+    # red_chariot_left.set_player('red')
+    # red_chariot_left.move_piece('a1')
+    # new_game.append(red_chariot_left)
+    #
+    # red_cannon_right = Cannon()
+    # red_cannon_right.set_player('red')
+    # red_cannon_right.move_piece('b3')
+    # new_game.append(red_cannon_right)
+    #
+    # red_cannon_left = Cannon()
+    # red_cannon_left.set_player('red')
+    # red_cannon_left.move_piece('h3')
+    # new_game.append(red_cannon_left)
+    #
+    # red_soldier_one = Soldier()
+    # red_soldier_one.set_player('red')
+    # red_soldier_one.move_piece('a4')
+    # new_game.append(red_soldier_one)
+    #
+    # red_soldier_two = Soldier()
+    # red_soldier_two.set_player('red')
+    # red_soldier_two.move_piece('c4')
+    # new_game.append(red_soldier_two)
+    #
+    # red_soldier_three = Soldier()
+    # red_soldier_three.set_player('red')
+    # red_soldier_three.move_piece('e4')
+    # new_game.append(red_soldier_three)
+    #
+    # red_soldier_four = Soldier()
+    # red_soldier_four.set_player('red')
+    # red_soldier_four.move_piece('g4')
+    # new_game.append(red_soldier_four)
+    #
+    # red_soldier_five = Soldier()
+    # red_soldier_five.set_player('red')
+    # red_soldier_five.move_piece('i4')
+    # new_game.append(red_soldier_five)
 
     # BLACK SIDE
-    black_general = General()
-    black_general.set_player('black')
-    black_general.move_piece('e10')
-    new_game.append(black_general)
-
-    black_advisor_left = Advisor()
-    black_advisor_left.set_player('black')
-    black_advisor_left.move_piece('d10')
-    new_game.append(black_advisor_left)
-
-    black_advisor_right = Advisor()
-    black_advisor_right.set_player('black')
-    black_advisor_right.move_piece('f10')
-    new_game.append(black_advisor_right)
-
-    black_elephant_left = Elephant()
-    black_elephant_left.set_player('black')
-    black_elephant_left.move_piece('c10')
-    new_game.append(black_elephant_left)
-
-    black_elephant_right = Elephant()
-    black_elephant_right.set_player('black')
-    black_elephant_right.move_piece('g10')
-    new_game.append(black_elephant_right)
-
-    black_horse_left = Horse()
-    black_horse_left.set_player('black')
-    black_horse_left.move_piece('b10')
-    new_game.append(black_horse_left)
-
-    black_horse_right = Horse()
-    black_horse_right.set_player('black')
-    black_horse_right.move_piece('h10')
-    new_game.append(black_horse_right)
+    # black_general = General()
+    # black_general.set_player('black')
+    # black_general.move_piece('e10')
+    # new_game.append(black_general)
+    #
+    # black_advisor_left = Advisor()
+    # black_advisor_left.set_player('black')
+    # black_advisor_left.move_piece('d10')
+    # new_game.append(black_advisor_left)
+    #
+    # black_advisor_right = Advisor()
+    # black_advisor_right.set_player('black')
+    # black_advisor_right.move_piece('f10')
+    # new_game.append(black_advisor_right)
+    #
+    # black_elephant_left = Elephant()
+    # black_elephant_left.set_player('black')
+    # black_elephant_left.move_piece('c10')
+    # new_game.append(black_elephant_left)
+    #
+    # black_elephant_right = Elephant()
+    # black_elephant_right.set_player('black')
+    # black_elephant_right.move_piece('g10')
+    # new_game.append(black_elephant_right)
+    #
+    # black_horse_left = Horse()
+    # black_horse_left.set_player('black')
+    # black_horse_left.move_piece('b10')
+    # new_game.append(black_horse_left)
+    #
+    # black_horse_right = Horse()
+    # black_horse_right.set_player('black')
+    # black_horse_right.move_piece('h10')
+    # new_game.append(black_horse_right)
+    #
+    # black_chariot_right = Chariot()
+    # black_chariot_right.set_player('black')
+    # black_chariot_right.move_piece('a10')
+    # new_game.append(black_chariot_right)
 
     black_chariot_right = Chariot()
     black_chariot_right.set_player('black')
-    black_chariot_right.move_piece('a10')
+    black_chariot_right.move_piece('e10')
     new_game.append(black_chariot_right)
 
-    black_chariot_right = Chariot()
-    black_chariot_right.set_player('black')
-    black_chariot_right.move_piece('i10')
-    new_game.append(black_chariot_right)
-
-    black_cannon_right = Cannon()
-    black_cannon_right.set_player('black')
-    black_cannon_right.move_piece('b8')
-    new_game.append(black_cannon_right)
-
-    black_cannon_left = Cannon()
-    black_cannon_left.set_player('black')
-    black_cannon_left.move_piece('h8')
-    new_game.append(black_cannon_left)
-
-    black_soldier_one = Soldier()
-    black_soldier_one.set_player('black')
-    black_soldier_one.move_piece('a7')
-    new_game.append(black_soldier_one)
-
-    black_soldier_two = Soldier()
-    black_soldier_two.set_player('black')
-    black_soldier_two.move_piece('c7')
-    new_game.append(black_soldier_two)
-
-    black_soldier_three = Soldier()
-    black_soldier_three.set_player('black')
-    black_soldier_three.move_piece('e7')
-    new_game.append(black_soldier_three)
-
-    black_soldier_four = Soldier()
-    black_soldier_four.set_player('black')
-    black_soldier_four.move_piece('g7')
-    new_game.append(black_soldier_four)
-
-    black_soldier_five = Soldier()
-    black_soldier_five.set_player('black')
-    black_soldier_five.move_piece('i7')
-    new_game.append(black_soldier_five)
+    # black_cannon_right = Cannon()
+    # black_cannon_right.set_player('black')
+    # black_cannon_right.move_piece('b8')
+    # new_game.append(black_cannon_right)
+    #
+    # black_cannon_left = Cannon()
+    # black_cannon_left.set_player('black')
+    # black_cannon_left.move_piece('h8')
+    # new_game.append(black_cannon_left)
+    #
+    # black_soldier_one = Soldier()
+    # black_soldier_one.set_player('black')
+    # black_soldier_one.move_piece('a7')
+    # new_game.append(black_soldier_one)
+    #
+    # black_soldier_two = Soldier()
+    # black_soldier_two.set_player('black')
+    # black_soldier_two.move_piece('c7')
+    # new_game.append(black_soldier_two)
+    #
+    # black_soldier_three = Soldier()
+    # black_soldier_three.set_player('black')
+    # black_soldier_three.move_piece('e7')
+    # new_game.append(black_soldier_three)
+    #
+    # black_soldier_four = Soldier()
+    # black_soldier_four.set_player('black')
+    # black_soldier_four.move_piece('g7')
+    # new_game.append(black_soldier_four)
+    #
+    # black_soldier_five = Soldier()
+    # black_soldier_five.set_player('black')
+    # black_soldier_five.move_piece('i7')
+    # new_game.append(black_soldier_five)
 
     return new_game
 
@@ -1184,9 +1185,9 @@ def NewGame():
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-xi.make_move('a7', 'a6')
-print()
-xi.get_piece_data()
+# xi.make_move('a7', 'a6')
+# print()
+# xi.get_piece_data()
 # xi.make_move('e8', 'c6')
 # print()
 # xi.get_piece_data()
