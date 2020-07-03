@@ -281,7 +281,14 @@ class Pieces():
     """
         self._legal_moves.remove(move)
 
+    # Piece movement operations
     def get_index_of_location(self, piece, board):
+        """
+        Returns the index values of the piece on the board.
+        :param piece: The alphanumerical piece location.
+        :param board: The reference board.
+        :return: The index number of the column and the index number of the row.
+        """
         index_column = None
         index_row = None
         for i in board:
@@ -290,6 +297,30 @@ class Pieces():
                     index_column = i.index(t)
                     index_row = board.index(i)
         return index_column, index_row
+
+    def friendly_player(self, piece, piece_list):
+        selection = None
+        for i in piece_list:
+            if i.get_piece_location() == piece:
+                selection = i
+                break
+        return selection
+
+    def orthogonal_movement(self, index_row, index_column, row, column, board):
+        move = board[index_row + row][index_column + column]
+        return move
+
+    def movement_pool_check(self, piece):
+        """
+        Movement pool used for GENERAL and ADVISOR
+        :param piece: Piece to check for player ownership
+        :return:
+        """
+        if piece.get_player() == 'red':
+            move_pool = ['d1', 'd2', 'd3', 'e1', 'e2', 'e3', 'f1', 'f2', 'f3']
+        else:
+            move_pool = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
+        return move_pool
 
 
 # INDIVIDUAL PIECES
@@ -311,7 +342,6 @@ class General(Pieces):
     :param board: Reference of the board.
     :param piece_list: The list of current active pieces for reference.
     """
-        color = piece.get_player()  # Set to current player.
         piece.clear_pool()  # Clear move pool.
 
         # Each General can not leave a specific square. This is all the potential moves that a General could make in the
@@ -321,55 +351,46 @@ class General(Pieces):
 
         # Set the index for row and column to the pieces current location for reference.
         index_column, index_row = self.get_index_of_location(piece, board)
+        # Picks correct move pool for the given General piece
+        movement_pool = self.movement_pool_check(piece)
 
         # General can move only orthogonally. This will add each legal orthogonal move to the legal move pool.
         try:
             # Upward one row of the board, same column.
-            if color == 'red':
-                if board[index_row - 1][index_column] in move_pool_1:
-                    piece.add_move_to_pool(board[index_row - 1][index_column])
-            elif color == 'black':
-                if board[index_row - 1][index_column] in move_pool_2:
-                    piece.add_move_to_pool(board[index_row - 1][index_column])
+            pos = self.orthogonal_movement(index_row, index_column, -1, 0, board)
+            if pos in movement_pool and self.friendly_player(pos, piece_list) is None:
+                piece.add_move_to_pool(pos)
+            elif pos in movement_pool and self.friendly_player(pos, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(pos)
         except:
             pass
         try:
             # Down one row of the board, same column.
-            if color == 'red':
-                if board[index_row + 1][index_column] in move_pool_1:
-                    piece.add_move_to_pool(board[index_row + 1][index_column])
-            elif color == 'black':
-                if board[index_row + 1][index_column] in move_pool_2:
-                    piece.add_move_to_pool(board[index_row + 1][index_column])
+            pos = self.orthogonal_movement(index_row, index_column, +1, 0, board)
+            if pos in movement_pool and self.friendly_player(pos, piece_list) is None:
+                piece.add_move_to_pool(pos)
+            elif pos in movement_pool and self.friendly_player(pos, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(pos)
         except:
             pass
         try:
             # Left one column on the board, same row.
-            if color == 'red':
-                if board[index_row][index_column - 1] in move_pool_1:
-                    piece.add_move_to_pool(board[index_row][index_column - 1])
-            elif color == 'black':
-                if board[index_row][index_column - 1] in move_pool_2:
-                    piece.add_move_to_pool(board[index_row][index_column - 1])
+            pos = self.orthogonal_movement(index_row, index_column, 0, -1, board)
+            if pos in movement_pool and self.friendly_player(pos, piece_list) is None:
+                piece.add_move_to_pool(pos)
+            elif pos in movement_pool and self.friendly_player(pos, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(pos)
         except:
             pass
         try:
             # Right one column of the board, same row.
-            if color == 'red':
-                if board[index_row][index_column + 1] in move_pool_1:
-                    piece.add_move_to_pool(board[index_row][index_column + 1])
-            elif color == 'black':
-                if board[index_row][index_column + 1] in move_pool_2:
-                    piece.add_move_to_pool(board[index_row][index_column + 1])
+            pos = self.orthogonal_movement(index_row, index_column, 0, +1, board)
+            if pos in movement_pool and self.friendly_player(pos, piece_list) is None:
+                piece.add_move_to_pool(pos)
+            elif pos in movement_pool and self.friendly_player(pos, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(pos)
         except:
             pass
-
-        for j in piece_list:
-            if j.get_player() == color and j.get_piece_location() in piece.get_legal_moves():
-                remove = j.get_piece_location()
-                piece.delete_move(remove)
-        return True
-
 
 class Advisor(Pieces):
     """
@@ -387,10 +408,6 @@ class Advisor(Pieces):
 
         # Each General can not leave a specific square. This is all the potential moves that a General could make in the
         # confines of the square.
-        if color == 'red':
-            move_pool_1 = ['d1', 'd2', 'd3', 'e1', 'e2', 'e3', 'f1', 'f2', 'f3']
-        elif color == 'black':
-            move_pool_2 = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
 
         # Set the index for row and column to the pieces current location for reference.
         index_column, index_row = self.get_index_of_location(piece, board)
@@ -458,9 +475,14 @@ class Elephant(Pieces):
 
         # Set the index for row and column to the pieces current location for reference.
         index_column, index_row = self.get_index_of_location(piece, board)
+        # Picks correct movement pool for advisor
+        movement_pool = self.movement_pool_check(piece)
 
         # Up left
         try:
+            pos = self.orthogonal_movement(index_row, index_column, -1, -1, board)
+            if pos in movement_pool and self.friendly_player(pos, piece_list) is False:
+                piece.add_move_to_pool(pos)
             temp = False
             # Set potential move to up left square.
             a = board[index_row - 1][index_column - 1]
@@ -1023,15 +1045,15 @@ def NewGame():
     red_general.move_piece('e1')
     new_game.append(red_general)
 
-    red_advisor_left = Advisor()
-    red_advisor_left.set_player('red')
-    red_advisor_left.move_piece('d1')
-    new_game.append(red_advisor_left)
-
-    red_advisor_right = Advisor()
-    red_advisor_right.set_player('red')
-    red_advisor_right.move_piece('f1')
-    new_game.append(red_advisor_right)
+    # red_advisor_left = Advisor()
+    # red_advisor_left.set_player('red')
+    # red_advisor_left.move_piece('d1')
+    # new_game.append(red_advisor_left)
+    #
+    # red_advisor_right = Advisor()
+    # red_advisor_right.set_player('red')
+    # red_advisor_right.move_piece('f1')
+    # new_game.append(red_advisor_right)
 
     # red_elephant_left = Elephant()
     # red_elephant_left.set_player('red')
@@ -1099,10 +1121,10 @@ def NewGame():
     # new_game.append(red_soldier_five)
 
     # BLACK SIDE
-    # black_general = General()
-    # black_general.set_player('black')
-    # black_general.move_piece('e10')
-    # new_game.append(black_general)
+    black_general = General()
+    black_general.set_player('black')
+    black_general.move_piece('e10')
+    new_game.append(black_general)
     #
     # black_advisor_left = Advisor()
     # black_advisor_left.set_player('black')
@@ -1114,10 +1136,10 @@ def NewGame():
     # black_advisor_right.move_piece('f10')
     # new_game.append(black_advisor_right)
     #
-    # black_elephant_left = Elephant()
-    # black_elephant_left.set_player('black')
-    # black_elephant_left.move_piece('c10')
-    # new_game.append(black_elephant_left)
+    black_elephant_left = Elephant()
+    black_elephant_left.set_player('red')
+    black_elephant_left.move_piece('e9')
+    new_game.append(black_elephant_left)
     #
     # black_elephant_right = Elephant()
     # black_elephant_right.set_player('black')
@@ -1139,10 +1161,10 @@ def NewGame():
     # black_chariot_right.move_piece('a10')
     # new_game.append(black_chariot_right)
 
-    black_chariot_right = Chariot()
-    black_chariot_right.set_player('black')
-    black_chariot_right.move_piece('e10')
-    new_game.append(black_chariot_right)
+    # black_chariot_right = Chariot()
+    # black_chariot_right.set_player('black')
+    # black_chariot_right.move_piece('e10')
+    # new_game.append(black_chariot_right)
 
     # black_cannon_right = Cannon()
     # black_cannon_right.set_player('black')
