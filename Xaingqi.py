@@ -307,8 +307,11 @@ class Pieces():
         return selection
 
     def potential_movement(self, index_row, index_column, row, column, board):
-        move = board[index_row + row][index_column + column]
-        return move
+        if (index_row + row) in range(0, 10) and (index_column + column) in range(0, 10):
+            move = board[index_row + row][index_column + column]
+            return move
+        else:
+            return None
 
     def movement_pool_check(self, piece):
         """
@@ -392,6 +395,7 @@ class General(Pieces):
         except:
             pass
 
+
 class Advisor(Pieces):
     """
   Advisors guard the General in the castle. They can move one space any direction diagonally.
@@ -452,6 +456,7 @@ class Advisor(Pieces):
         except:
             pass
 
+
 class Elephant(Pieces):
 
     def __init__(self):
@@ -464,84 +469,45 @@ class Elephant(Pieces):
 
         # Set the index for row and column to the pieces current location for reference.
         index_column, index_row = self.get_index_of_location(piece, board)
-        # Picks correct movement pool for advisor
-        movement_pool = self.movement_pool_check(piece)
 
         # Up left
         try:
-            pos = self.orthogonal_movement(index_row, index_column, -1, -1, board)
-            if pos in movement_pool and self.friendly_player(pos, piece_list) is False:
-                piece.add_move_to_pool(pos)
-            temp = False
-            # Set potential move to up left square.
-            a = board[index_row - 1][index_column - 1]
-            for i in piece_list:
-                if i.get_piece_location() == a and i != piece:
-                    temp = True
-                    break
-            # If there is no piece in the way set potential location to up left square from a
-            if temp is not True:
-                b = board[index_row - 2][index_column - 2]
-                if (index_row - 2) >= 0 and (index_column - 2) >= 0:
-                    piece.add_move_to_pool(b)
+            pos = self.potential_movement(index_row, index_column, -1, -1, board)
+            if self.friendly_player(pos, piece_list) is None and pos is not None:
+                pos = self.potential_movement(index_row, index_column, -2, -2, board)
+                if self.friendly_player(pos, piece_list) is None or self.friendly_player(pos, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(pos)
         except:
             pass
-
         # Up - right
         try:
-            temp_2 = False
-            # Set potential move to up right square.
-            c = board[index_row - 1][index_column + 1]
-            for i in piece_list:
-                if i.get_piece_location() == c and i != piece:
-                    temp_2 = True
-                    break
-            # If there is no piece in the way set potential location to up right square from c
-            if temp_2 is not True:
-                d = board[index_row - 2][index_column + 2]
-                if (index_row - 2) >= 0 and (index_column + 2) in range(0, 10):
-                    piece.add_move_to_pool(d)
+            pos = self.potential_movement(index_row, index_column, -1, +1, board)
+            if self.friendly_player(pos, piece_list) is None and pos is not None:
+                pos = self.potential_movement(index_row, index_column, -2, +2, board)
+                if self.friendly_player(pos, piece_list) is None or self.friendly_player(pos, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(pos)
         except:
             pass
 
         # Down - left
         try:
-            temp_3 = False
-            # Set potential move to down left square.
-            e = board[index_row + 1][index_column - 1]
-            for i in piece_list:
-                if i.get_piece_location() == e and i != piece:
-                    temp_3 = True
-                    break
-            # If there is no piece in the way set potential location to down left square from e
-            if temp_3 is not True:
-                f = board[index_row + 2][index_column - 2]
-                if (index_row + 2) in range(0, 10) and (index_column - 2) in range(0, 10):
-                    piece.add_move_to_pool(f)
+            pos = self.potential_movement(index_row, index_column, +1, -1, board)
+            if self.friendly_player(pos, piece_list) is None and pos is not None:
+                pos = self.potential_movement(index_row, index_column, +2, -2, board)
+                if self.friendly_player(pos, piece_list) is None or self.friendly_player(pos, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(pos)
         except:
             pass
 
         # Down - right
         try:
-            temp_4 = False
-            # Set potential move to down right square.
-            g = board[index_row + 1][index_column + 1]
-            for i in piece_list:
-                if i.get_piece_location() == g and i != piece:
-                    temp_4 = True
-                    break
-            # If there is no piece in the way set potential location to down right square from g
-            if temp_4 is not True:
-                h = board[index_row + 2][index_column + 2]
-                if (index_row + 2) in range(0, 10) and (index_column + 2) in range(0, 10):
-                    piece.add_move_to_pool(h)
+            pos = self.potential_movement(index_row, index_column, +1, +1, board)
+            if self.friendly_player(pos, piece_list) is None and pos is not None:
+                pos = self.potential_movement(index_row, index_column, +2, +2, board)
+                if self.friendly_player(pos, piece_list) is None or self.friendly_player(pos, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(pos)
         except:
             pass
-
-        for n in piece.get_legal_moves():
-            for o in piece_list:
-                if o.get_player() == piece.get_player() and o.get_piece_location() == n:
-                    piece.delete_move(n)
 
 
 class Horse(Pieces):
@@ -1045,13 +1011,13 @@ def NewGame():
     # new_game.append(red_advisor_right)
 
     # red_elephant_left = Elephant()
-    # red_elephant_left.set_player('red')
-    # red_elephant_left.move_piece('c1')
+    # red_elephant_left.set_player('black')
+    # red_elephant_left.move_piece('e3')
     # new_game.append(red_elephant_left)
     #
     # red_elephant_right = Elephant()
     # red_elephant_right.set_player('red')
-    # red_elephant_right.move_piece('g1')
+    # red_elephant_right.move_piece('g5')
     # new_game.append(red_elephant_right)
     #
     # red_horse_left = Horse()
@@ -1115,25 +1081,25 @@ def NewGame():
     # black_general.move_piece('e10')
     # new_game.append(black_general)
     #
-    black_advisor_left = Advisor()
-    black_advisor_left.set_player('black')
-    black_advisor_left.move_piece('d10')
-    new_game.append(black_advisor_left)
-
-    black_advisor_right = Advisor()
-    black_advisor_right.set_player('black')
-    black_advisor_right.move_piece('f10')
-    new_game.append(black_advisor_right)
-
-    # black_elephant_left = Elephant()
-    # black_elephant_left.set_player('black')
-    # black_elephant_left.move_piece('e9')
-    # new_game.append(black_elephant_left)
+    # black_advisor_left = Advisor()
+    # black_advisor_left.set_player('black')
+    # black_advisor_left.move_piece('d10')
+    # new_game.append(black_advisor_left)
     #
-    # black_elephant_right = Elephant()
-    # black_elephant_right.set_player('black')
-    # black_elephant_right.move_piece('g10')
-    # new_game.append(black_elephant_right)
+    # black_advisor_right = Advisor()
+    # black_advisor_right.set_player('black')
+    # black_advisor_right.move_piece('f10')
+    # new_game.append(black_advisor_right)
+
+    black_elephant_left = Elephant()
+    black_elephant_left.set_player('black')
+    black_elephant_left.move_piece('e10')
+    new_game.append(black_elephant_left)
+
+    black_elephant_right = Elephant()
+    black_elephant_right.set_player('black')
+    black_elephant_right.move_piece('g10')
+    new_game.append(black_elephant_right)
     #
     # black_horse_left = Horse()
     # black_horse_left.set_player('black')
