@@ -36,6 +36,8 @@ class Xiangqi:
         # Player dictionaries for important piece data.
         self._board_dict_red = {}
         self._board_dict_black = {}
+        self._set_of_legal_red_moves = set()
+        self._set_of_legal_black_moves = set()
 
         # START OF GAME. Red goes first.
         self._player_turn = 'red'
@@ -71,30 +73,60 @@ class Xiangqi:
                                                    "Moves: " + str(i.get_legal_moves())]
                 count_2 += 1
 
-    def update_move_pool(self, piece):
+    def update_move_pool(self, pieces):
         """
     Takes in a piece object and updates its potential move pool.
     :param piece: The piece to check for legal moves.
     """
-        for i in piece:
+        self._set_of_legal_red_moves = set()
+        self._set_of_legal_black_moves = set()
+        for i in pieces:
             piece = i
             if i.get_piece_name() == 'ADVISOR':
                 i.advisor_legal_moves(piece, self._board, self._active_pieces)
+                if i.get_player() == 'red':
+                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                else:
+                    self._set_of_legal_black_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'ELEPHANT':
                 i.elephant_legal_moves(piece, self._board, self._active_pieces)
+                if i.get_player() == 'red':
+                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                else:
+                    self._set_of_legal_black_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'HORSE':
                 i.horse_legal_moves(piece, self._board, self._active_pieces)
+                if i.get_player() == 'red':
+                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                else:
+                    self._set_of_legal_black_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'CHARIOT':
                 i.chariot_legal_moves(piece, self._board, self._active_pieces)
+                if i.get_player() == 'red':
+                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                else:
+                    self._set_of_legal_black_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'CANNON':
                 i.cannon_legal_moves(piece, self._board, self._active_pieces)
+                if i.get_player() == 'red':
+                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                else:
+                    self._set_of_legal_black_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'SOLDIER':
                 i.soldier_legal_moves(piece, self._board, self._active_pieces)
+                if i.get_player() == 'red':
+                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                else:
+                    self._set_of_legal_black_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'GENERAL':
                 i.general_legal_moves(piece, self._board, self._active_pieces)
+                if i.get_player() == 'red':
+                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                else:
+                    self._set_of_legal_black_moves.update(i.get_legal_moves())
 
         self.update_dict(self._active_pieces)
-        return True
+        return
 
     def get_piece_data(self):
         """
@@ -103,6 +135,11 @@ class Xiangqi:
         pprint.pprint(self._board_dict_red)
         print()
         pprint.pprint(self._board_dict_black)
+
+    def get_set_of_legal_moves(self):
+        print(self._set_of_legal_red_moves)
+        print(self._set_of_legal_black_moves)
+        return
 
     def set_player_turn(self):
         """
@@ -337,6 +374,11 @@ class General(Pieces):
     def __init__(self):
         super().__init__()
         self._name = 'GENERAL'
+        self._in_check = False
+
+    def general_in_check(self):
+        #TODO add code to deal with general being in check.
+        pass
 
     def general_legal_moves(self, piece, board, piece_list):
         """
@@ -940,10 +982,10 @@ def NewGame():
     new_game = []
 
     # RED SIDE
-    # red_general = General()
-    # red_general.set_player('red')
-    # red_general.move_piece('e1')
-    # new_game.append(red_general)
+    red_general = General()
+    red_general.set_player('red')
+    red_general.move_piece('e1')
+    new_game.append(red_general)
 
     # red_advisor_left = Advisor()
     # red_advisor_left.set_player('red')
@@ -1046,10 +1088,10 @@ def NewGame():
     # black_elephant_right.move_piece('g10')
     # new_game.append(black_elephant_right)
     #
-    black_horse_left = Horse()
-    black_horse_left.set_player('black')
-    black_horse_left.move_piece('d5')
-    new_game.append(black_horse_left)
+    # black_horse_left = Horse()
+    # black_horse_left.set_player('black')
+    # black_horse_left.move_piece('d5')
+    # new_game.append(black_horse_left)
     #
     # black_horse_right = Horse()
     # black_horse_right.set_player('black')
@@ -1061,10 +1103,10 @@ def NewGame():
     # black_chariot_right.move_piece('a10')
     # new_game.append(black_chariot_right)
 
-    # black_chariot_right = Chariot()
-    # black_chariot_right.set_player('black')
-    # black_chariot_right.move_piece('e10')
-    # new_game.append(black_chariot_right)
+    black_chariot_right = Chariot()
+    black_chariot_right.set_player('black')
+    black_chariot_right.move_piece('e10')
+    new_game.append(black_chariot_right)
 
     # black_cannon_right = Cannon()
     # black_cannon_right.set_player('black')
@@ -1107,6 +1149,7 @@ def NewGame():
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
+xi.get_set_of_legal_moves()
 # xi.make_move('a7', 'a6')
 # print()
 # xi.get_piece_data()
