@@ -170,8 +170,9 @@ class Xiangqi:
         """
         # Starting variables.
         piece = None  # piece is None until a start with a piece in it is selected.
-        block = False  # block is False unless there is any piece in an end.
-        attack = False  # attack is False unless a blocked piece is the opposing side.
+        piece_2 = None # piece is None unless there is a piece in end location
+        red_general = None # Assign red general
+        black_general = None # Assign black general
 
         if start == end:  # Prevents movement to the same space
             return False
@@ -208,19 +209,16 @@ class Xiangqi:
                 if j != piece:
                     if j.get_piece_location() == end:
                         piece_2 = j
-                        attack = True
-                        block = True
                         break
 
             # If there is a piece in end and it is an enemy piece take the piece location and move,
             # otherwise return False.
-            if block is True:
-                if attack is True:
+            if piece_2 is not None:
+                if piece_2.get_player() != piece.get_player():
                     self._active_pieces.remove(piece_2)
                     piece.move_piece(end)
                     self.update_move_pool(self._active_pieces)
                     self.set_player_turn()
-                    print(self.get_player_turn())
                     return True
                 else:
                     return False
@@ -230,7 +228,6 @@ class Xiangqi:
                 piece.move_piece(end)
                 self.update_move_pool(self._active_pieces)
                 self.set_player_turn()
-                print(self.get_player_turn())
                 return True
         else:
             return False
@@ -248,11 +245,21 @@ class Xiangqi:
                 break
         return in_bounds
 
-    # TODO - DEBUGGING AREA
+    def general_in_check(self, piece, red_pool, black_pool):
+
+        pool = None
+        if piece.get_piece_name() == 'GENERAL':
+            if piece.get_player() == 'red':
+                pool = black_pool
+            else:
+                pool = red_pool
+        for i in piece.get_legal_moves():
+            if i in pool:
+                piece.delete_move(i)
 
 
 # GAME PIECES
-class Pieces():
+class Pieces:
     """
   Game piece object creation. Contains all important functions for piece data such as current location, legal moves,
   player who owns piece.
@@ -376,10 +383,6 @@ class General(Pieces):
         self._name = 'GENERAL'
         self._in_check = False
 
-    def general_in_check(self):
-        #TODO add code to deal with general being in check.
-        pass
-
     def general_legal_moves(self, piece, board, piece_list):
         """
     Will check the board for all of the General's legal moves and add them to the reference pool
@@ -388,11 +391,6 @@ class General(Pieces):
     :param piece_list: The list of current active pieces for reference.
     """
         piece.clear_pool()  # Clear move pool.
-
-        # Each General can not leave a specific square. This is all the potential moves that a General could make in the
-        # confines of the square.
-        move_pool_1 = ['d1', 'd2', 'd3', 'e1', 'e2', 'e3', 'f1', 'f2', 'f3']
-        move_pool_2 = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
 
         # Set the index for row and column to the pieces current location for reference.
         index_column, index_row = self.get_index_of_location(piece, board)
@@ -1150,7 +1148,7 @@ def NewGame():
 xi = Xiangqi()
 xi.get_piece_data()
 xi.get_set_of_legal_moves()
-# xi.make_move('a7', 'a6')
+# xi.make_move('e10', 'e7')
 # print()
 # xi.get_piece_data()
 # xi.make_move('e8', 'c6')
