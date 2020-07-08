@@ -12,10 +12,35 @@ import pprint
 class Xiangqi:
     """
   Main game engine of the game Xiangqi, or Chinese Chess.
+  :param pull_piece_information - Adds name, player ownership, current location, and legal moves to a dictionary for
+                           information purposes only.
+
   """
 
     def __init__(self):
+        """
+        :items:
+        _board - The list of all possible moves on the board for reference.
+        _red_pieces_information - Stores all of the red pieces information in a dictionary.
+        _black_pieces_information - Stores all of the black pieces information in a dictionary.
+        _red_pieces_legal_moves - List of all possible moves from red team.
+        -black_pieces_legal_moves - List of all possible moves from black team.
+        _player_turn - Stores the current color of the active player.
+        _game_state - Stores the current game state, UNFINISHED, RED_WON, BLACK_WON, or STALEMATE.
+        _active_pieces - Stores the active piece objects for reference.
 
+        :params:
+        pull_piece_information - Stores active piece information in to _red_pieces_information or _black_pieces_information
+        get_piece_data - Prints the information stored in _red_pieces_information or _black_pieces_information
+        update_move_pool - Cycles through the list of pieces and logs all legal moves to their move pool.
+        get_opposing_sides_legal_moves - Returns a list of potential moves from the opposing player.
+        get_player_turn - Used to get the color of the current player who can move.
+        set_player_turn - Sets the player turn to the opposite color.
+        get_game_state - Get the current state of the game.
+        set_game_state - Changes the state of the game.
+        make_move - Moves a piece from a selected start location to a legal end location.
+        verify_move_in_board_range - References if the selected move is a location within _board
+        """
         # BOARD FUNCTIONS
 
         # Reference for in bound moves
@@ -33,11 +58,11 @@ class Xiangqi:
                        ["a10", "b10", "c10", "d10", "e10", "f10", "g10", "h10", "i10"]]
         # Black Side
 
-        # Player dictionaries for important piece data.
-        self._board_dict_red = {}
-        self._board_dict_black = {}
-        self._set_of_legal_red_moves = set()
-        self._set_of_legal_black_moves = set()
+        # Player dictionaries/sets for important piece data.
+        self._red_pieces_information = {}
+        self._black_pieces_information = {}
+        self._red_pieces_legal_moves = set()
+        self._black_pieces_legal_moves = set()
 
         # START OF GAME. Red goes first.
         self._player_turn = 'red'
@@ -48,98 +73,103 @@ class Xiangqi:
         self._active_pieces = NewGame()
         self.update_move_pool(self._active_pieces)
 
-    def update_dict(self, piece_list):
+    def pull_piece_information(self, piece_list):
         """
     Update the player dictionaries with active pieces and displays name, player, location, and potential legal moves.
     :param piece_list: Hidden list of Object pieces.
     """
         # Update red dictionary
-        self._board_dict_red = {}
-        count = 1
+        self._red_pieces_information = {}
+        self._black_pieces_information = {}
+        red_count = 1
+        black_count = 1
         for i in piece_list:
             if i.get_player() == 'red':
-                self._board_dict_red[count] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()),
-                                               "location: " + str(i.get_piece_location()),
-                                               "Moves: " + str(i.get_legal_moves())]
-                count += 1
+                self._red_pieces_information[red_count] = ["Name: " + str(i.get_piece_name()),
+                                                           "player: " + str(i.get_player()),
+                                                           "location: " + str(i.get_piece_location()),
+                                                           "Moves: " + str(i.get_legal_moves())]
+                red_count += 1
+            else:
+                self._black_pieces_information[black_count] = ["Name: " + str(i.get_piece_name()),
+                                                               "player: " + str(i.get_player()),
+                                                               "location: " + str(i.get_piece_location()),
+                                                               "Moves: " + str(i.get_legal_moves())]
+                black_count += 1
 
-        # Update black dictionary
-        self._board_dict_black = {}
-        count_2 = 1
-        for i in piece_list:
-            if i.get_player() == 'black':
-                self._board_dict_black[count_2] = ["Name: " + str(i.get_piece_name()), "player: " + str(i.get_player()),
-                                                   "location: " + str(i.get_piece_location()),
-                                                   "Moves: " + str(i.get_legal_moves())]
-                count_2 += 1
+    def get_piece_data(self):
+        """
+    Prints red_pieces_information and black_pieces_information to screen.
+    """
+        pprint.pprint(self._red_pieces_information)
+        print()
+        pprint.pprint(self._black_pieces_information)
 
     def update_move_pool(self, pieces):
         """
     Takes in a piece object and updates its potential move pool.
-    :param piece: The piece to check for legal moves.
+    :param pieces: The piece to check for legal moves.
     """
-        self._set_of_legal_red_moves = set()
-        self._set_of_legal_black_moves = set()
+        self._red_pieces_legal_moves = set()
+        self._black_pieces_legal_moves = set()
         for i in pieces:
             piece = i
             if i.get_piece_name() == 'ADVISOR':
                 i.advisor_legal_moves(piece, self._board, self._active_pieces)
                 if i.get_player() == 'red':
-                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                    self._red_pieces_legal_moves.update(i.get_legal_moves())
                 else:
-                    self._set_of_legal_black_moves.update(i.get_legal_moves())
+                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'ELEPHANT':
                 i.elephant_legal_moves(piece, self._board, self._active_pieces)
                 if i.get_player() == 'red':
-                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                    self._red_pieces_legal_moves.update(i.get_legal_moves())
                 else:
-                    self._set_of_legal_black_moves.update(i.get_legal_moves())
+                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'HORSE':
                 i.horse_legal_moves(piece, self._board, self._active_pieces)
                 if i.get_player() == 'red':
-                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                    self._red_pieces_legal_moves.update(i.get_legal_moves())
                 else:
-                    self._set_of_legal_black_moves.update(i.get_legal_moves())
+                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'CHARIOT':
                 i.chariot_legal_moves(piece, self._board, self._active_pieces)
                 if i.get_player() == 'red':
-                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                    self._red_pieces_legal_moves.update(i.get_legal_moves())
                 else:
-                    self._set_of_legal_black_moves.update(i.get_legal_moves())
+                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'CANNON':
                 i.cannon_legal_moves(piece, self._board, self._active_pieces)
                 if i.get_player() == 'red':
-                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                    self._red_pieces_legal_moves.update(i.get_legal_moves())
                 else:
-                    self._set_of_legal_black_moves.update(i.get_legal_moves())
+                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'SOLDIER':
                 i.soldier_legal_moves(piece, self._board, self._active_pieces)
                 if i.get_player() == 'red':
-                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                    self._red_pieces_legal_moves.update(i.get_legal_moves())
                 else:
-                    self._set_of_legal_black_moves.update(i.get_legal_moves())
+                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'GENERAL':
                 i.general_legal_moves(piece, self._board, self._active_pieces)
                 if i.get_player() == 'red':
-                    self._set_of_legal_red_moves.update(i.get_legal_moves())
+                    self._red_pieces_legal_moves.update(i.get_legal_moves())
                 else:
-                    self._set_of_legal_black_moves.update(i.get_legal_moves())
+                    self._black_pieces_legal_moves.update(i.get_legal_moves())
 
-        self.update_dict(self._active_pieces)
+        self.pull_piece_information(self._active_pieces)
         return
 
-    def get_piece_data(self):
+    def get_opposing_sides_legal_moves(self, player):
         """
-    Using pretty print to print the dictionary data to the screen.
-    """
-        pprint.pprint(self._board_dict_red)
-        print()
-        pprint.pprint(self._board_dict_black)
-
-    def get_set_of_legal_moves(self):
-        print(self._set_of_legal_red_moves)
-        print(self._set_of_legal_black_moves)
-        return
+        Returns the list of a selected players legal moves.
+        :param player: The color of the player requesting the opposing factions move pool.
+        :return: the selected move pool list.
+        """
+        if player == 'red':
+            return self._black_pieces_legal_moves
+        else:
+            return self._red_pieces_legal_moves
 
     def set_player_turn(self):
         """
@@ -151,12 +181,25 @@ class Xiangqi:
             self._player_turn = 'red'
 
     def get_player_turn(self):
+        """
+        :return: Current players turn
+        """
         return self._player_turn
 
     def set_game_state(self, state):
-        self._game_state = state
+        """
+        Sets the game state to the selected state UNFINISHED, RED_WON, BLACK_WON, STALEMATE
+        :param state: State to input
+        """
+        if state == 'UNFINISHED' or state == 'RED_WON' or state == 'BLACK_WON' or state == 'STALEMATE':
+            self._game_state = state
+        else:
+            return False
 
     def get_game_state(self):
+        """
+        :return: The current state.
+        """
         return self._game_state
 
     def make_move(self, start, end):
@@ -174,16 +217,15 @@ class Xiangqi:
         red_general = None # Assign red general
         black_general = None # Assign black general
 
+        # Check what game state is.
+        if self.get_game_state() != 'UNFINISHED':
+            return self._game_state
+
         if start == end:  # Prevents movement to the same space
             return False
 
-        # Check what game state is.
-        if self.get_game_state() != 'UNFINISHED':
-            print("Game is not unfinished")
-            return False
-
         # Verify start and end are within the board
-        if self.legal_location_check(start) and self.legal_location_check(end):
+        if self.verify_move_in_board_range(start) and self.verify_move_in_board_range(end):
 
             # Find the piece located in start
             for i in self._active_pieces:
@@ -192,16 +234,7 @@ class Xiangqi:
                     break
 
             # Check to see that a piece is actually selected.
-            if piece is None:
-                return False
-
-            if piece.get_player() != self.get_player_turn():
-                print("This piece cannot move this turn")
-                return False
-
-            # Verify legal move is in move pool.
-            if end not in piece.get_legal_moves():
-                print("Illegal move")
+            if piece is None or piece.get_player() != self.get_player_turn() or end not in piece.get_legal_moves():
                 return False
 
             # Check if there is piece at the end location.
@@ -232,7 +265,7 @@ class Xiangqi:
         else:
             return False
 
-    def legal_location_check(self, location):
+    def verify_move_in_board_range(self, location):
         """
         Check to see if the alphanumeric location is within the board.
         :param location: The board location to check.
@@ -244,18 +277,6 @@ class Xiangqi:
                 in_bounds = True
                 break
         return in_bounds
-
-    def general_in_check(self, piece, red_pool, black_pool):
-
-        pool = None
-        if piece.get_piece_name() == 'GENERAL':
-            if piece.get_player() == 'red':
-                pool = black_pool
-            else:
-                pool = red_pool
-        for i in piece.get_legal_moves():
-            if i in pool:
-                piece.delete_move(i)
 
 
 # GAME PIECES
@@ -1147,7 +1168,8 @@ def NewGame():
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-xi.get_set_of_legal_moves()
+print(xi.get_opposing_sides_legal_moves('red'))
+print(xi.get_opposing_sides_legal_moves('black'))
 # xi.make_move('e10', 'e7')
 # print()
 # xi.get_piece_data()
