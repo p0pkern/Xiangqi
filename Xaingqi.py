@@ -26,13 +26,13 @@ class Xiangqi:
     pull_piece_information - Stores active piece information in to _red_pieces_information or _black_pieces_information
     get_piece_data - Prints the information stored in _red_pieces_information or _black_pieces_information
     update_move_pool - Cycles through the list of pieces and logs all legal moves to their move pool.
-    get_opposing_sides_legal_moves - Returns a list of potential moves from the opposing player.
     get_player_turn - Used to get the color of the current player who can move.
     set_player_turn - Sets the player turn to the opposite color.
     get_game_state - Get the current state of the game.
     set_game_state - Changes the state of the game.
     make_move - Moves a piece from a selected start location to a legal end location.
     verify_move_in_board_range - References if the selected move is a location within _board
+    general_in_danger - check for any locations that the general can put itself in check
     """
 
     def __init__(self):
@@ -56,8 +56,6 @@ class Xiangqi:
         # Player dictionaries/sets for important piece data.
         self._red_pieces_information = {}
         self._black_pieces_information = {}
-        self._red_pieces_legal_moves = set()
-        self._black_pieces_legal_moves = set()
 
         # START OF GAME. Red goes first.
         self._player_turn = 'red'
@@ -105,66 +103,25 @@ class Xiangqi:
     Takes in a piece object and updates its potential move pool.
     :param pieces: The piece to check for legal moves.
     """
-        self._red_pieces_legal_moves = set()
-        self._black_pieces_legal_moves = set()
         for i in pieces:
             piece = i
             if i.get_piece_name() == 'ADVISOR':
                 i.advisor_legal_moves(piece, self._board, self._active_pieces)
-                if i.get_player() == 'red':
-                    self._red_pieces_legal_moves.update(i.get_legal_moves())
-                else:
-                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'ELEPHANT':
                 i.elephant_legal_moves(piece, self._board, self._active_pieces)
-                if i.get_player() == 'red':
-                    self._red_pieces_legal_moves.update(i.get_legal_moves())
-                else:
-                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'HORSE':
                 i.horse_legal_moves(piece, self._board, self._active_pieces)
-                if i.get_player() == 'red':
-                    self._red_pieces_legal_moves.update(i.get_legal_moves())
-                else:
-                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'CHARIOT':
                 i.chariot_legal_moves(piece, self._board, self._active_pieces)
-                if i.get_player() == 'red':
-                    self._red_pieces_legal_moves.update(i.get_legal_moves())
-                else:
-                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'CANNON':
                 i.cannon_legal_moves(piece, self._board, self._active_pieces)
-                if i.get_player() == 'red':
-                    self._red_pieces_legal_moves.update(i.get_legal_moves())
-                else:
-                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'SOLDIER':
                 i.soldier_legal_moves(piece, self._board, self._active_pieces)
-                if i.get_player() == 'red':
-                    self._red_pieces_legal_moves.update(i.get_legal_moves())
-                else:
-                    self._black_pieces_legal_moves.update(i.get_legal_moves())
             elif i.get_piece_name() == 'GENERAL':
                 i.general_legal_moves(piece, self._board, self._active_pieces)
-                if i.get_player() == 'red':
-                    self._red_pieces_legal_moves.update(i.get_legal_moves())
-                else:
-                    self._black_pieces_legal_moves.update(i.get_legal_moves())
 
         self.pull_piece_information(self._active_pieces)
         return
-
-    def get_opposing_sides_legal_moves(self, player):
-        """
-        Returns the list of a selected players legal moves.
-        :param player: The color of the player requesting the opposing factions move pool.
-        :return: the selected move pool list.
-        """
-        if player == 'red':
-            return self._black_pieces_legal_moves
-        else:
-            return self._red_pieces_legal_moves
 
     def set_player_turn(self):
         """
@@ -209,8 +166,6 @@ class Xiangqi:
         # Starting variables.
         piece = None  # piece is None until a start with a piece in it is selected.
         piece_2 = None # piece is None unless there is a piece in end location
-        red_general = None # Assign red general
-        black_general = None # Assign black general
 
         # Check what game state is.
         if self.get_game_state() != 'UNFINISHED':
@@ -399,6 +354,19 @@ class Pieces:
             move_pool = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
         return move_pool
 
+    def general_cant_move_here(self, piece_list, piece):
+        for i in piece_list:
+            if i.get_piece_name() == 'GENERAL' and i.get_player() != piece.get_player():
+                for k in piece.get_legal_moves():
+                    if k in i.get_legal_moves():
+                        i.delete_move(k)
+
+    def general_is_in_check(self, piece_list, piece):
+        for i in piece_list:
+            if i.get_piece_name() == 'GENERAL' and i.get_player() != piece.get_player():
+                for k in piece.get_legal_moves():
+                    if k == i.get_piece_location():
+                        i.set_in_check(True)
 
 # INDIVIDUAL PIECES
 class General(Pieces):
@@ -412,6 +380,13 @@ class General(Pieces):
         super().__init__()
         self._name = 'GENERAL'
         self._in_check = False
+
+    def set_in_check(self, status):
+        if status is True:
+            self._in_check = True
+
+    def get_in_check(self):
+        return self._in_check
 
     def general_legal_moves(self, piece, board, piece_list):
         """
@@ -430,41 +405,43 @@ class General(Pieces):
         # General can move only orthogonally. This will add each legal orthogonal move to the legal move pool.
         try:
             # Upward one row of the board, same column.
-            pos = self.potential_movement(index_row, index_column, -1, 0, board)
-            if pos in movement_pool and self.verify_if_potential_piece(pos, piece_list) is None:
-                piece.add_move_to_pool(pos)
-            elif pos in movement_pool and self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, -1, 0, board)
+            if position in movement_pool and self.verify_if_potential_piece(position, piece_list) is None:
+                piece.add_move_to_pool(position)
+            elif position in movement_pool and self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(position)
         except:
             pass
         try:
             # Down one row of the board, same column.
-            pos = self.potential_movement(index_row, index_column, +1, 0, board)
-            if pos in movement_pool and self.verify_if_potential_piece(pos, piece_list) is None:
-                piece.add_move_to_pool(pos)
-            elif pos in movement_pool and self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, +1, 0, board)
+            if position in movement_pool and self.verify_if_potential_piece(position, piece_list) is None:
+                piece.add_move_to_pool(position)
+            elif position in movement_pool and self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(position)
         except:
             pass
         try:
             # Left one column on the board, same row.
-            pos = self.potential_movement(index_row, index_column, 0, -1, board)
-            if pos in movement_pool and self.verify_if_potential_piece(pos, piece_list) is None:
-                piece.add_move_to_pool(pos)
-            elif pos in movement_pool and self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, 0, -1, board)
+            if position in movement_pool and self.verify_if_potential_piece(position, piece_list) is None:
+                piece.add_move_to_pool(position)
+            elif position in movement_pool and self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(position)
         except:
             pass
         try:
             # Right one column of the board, same row.
-            pos = self.potential_movement(index_row, index_column, 0, +1, board)
-            if pos in movement_pool and self.verify_if_potential_piece(pos, piece_list) is None:
-                piece.add_move_to_pool(pos)
-            elif pos in movement_pool and self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, 0, +1, board)
+            if position in movement_pool and self.verify_if_potential_piece(position, piece_list) is None:
+                piece.add_move_to_pool(position)
+            elif position in movement_pool and self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(position)
         except:
             pass
 
+        self.general_cant_move_here(piece_list, piece)
+        self.general_is_in_check(piece_list, piece)
 
 class Advisor(Pieces):
     """
@@ -491,40 +468,42 @@ class Advisor(Pieces):
         # This will add each legal diagonal move to the legal move pool.
         try:
             # Up left
-            pos = self.potential_movement(index_row, index_column, -1, -1, board)
-            if pos in movement_pool and self.verify_if_potential_piece(pos, piece_list) is None:
-                piece.add_move_to_pool(pos)
-            elif pos in movement_pool and self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, -1, -1, board)
+            if position in movement_pool and self.verify_if_potential_piece(position, piece_list) is None:
+                piece.add_move_to_pool(position)
+            elif position in movement_pool and self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(position)
         except:
             pass
         try:
             # Up right
-            pos = self.potential_movement(index_row, index_column, -1, +1, board)
-            if pos in movement_pool and self.verify_if_potential_piece(pos, piece_list) is None:
-                piece.add_move_to_pool(pos)
-            elif pos in movement_pool and self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, -1, +1, board)
+            if position in movement_pool and self.verify_if_potential_piece(position, piece_list) is None:
+                piece.add_move_to_pool(position)
+            elif position in movement_pool and self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(position)
         except:
             pass
         try:
             # Down left
-            pos = self.potential_movement(index_row, index_column, +1, -1, board)
-            if pos in movement_pool and self.verify_if_potential_piece(pos, piece_list) is None:
-                piece.add_move_to_pool(pos)
-            elif pos in movement_pool and self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, +1, -1, board)
+            if position in movement_pool and self.verify_if_potential_piece(position, piece_list) is None:
+                piece.add_move_to_pool(position)
+            elif position in movement_pool and self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(position)
         except:
             pass
         try:
             # Down right
-            pos = self.potential_movement(index_row, index_column, +1, +1, board)
-            if pos in movement_pool and self.verify_if_potential_piece(pos, piece_list) is None:
-                piece.add_move_to_pool(pos)
-            elif pos in movement_pool and self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, +1, +1, board)
+            if position in movement_pool and self.verify_if_potential_piece(position, piece_list) is None:
+                piece.add_move_to_pool(position)
+            elif position in movement_pool and self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                piece.add_move_to_pool(position)
         except:
             pass
+
+        self.general_cant_move_here(piece_list, piece)
 
 
 class Elephant(Pieces):
@@ -542,42 +521,44 @@ class Elephant(Pieces):
 
         # Up left
         try:
-            pos = self.potential_movement(index_row, index_column, -1, -1, board)
-            if self.verify_if_potential_piece(pos, piece_list) is None and pos is not None:
-                pos = self.potential_movement(index_row, index_column, -2, -2, board)
-                if self.verify_if_potential_piece(pos, piece_list) is None or self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, -1, -1, board)
+            if self.verify_if_potential_piece(position, piece_list) is None and position is not None:
+                position = self.potential_movement(index_row, index_column, -2, -2, board)
+                if self.verify_if_potential_piece(position, piece_list) is None or self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position)
         except:
             pass
         # Up - right
         try:
-            pos = self.potential_movement(index_row, index_column, -1, +1, board)
-            if self.verify_if_potential_piece(pos, piece_list) is None and pos is not None:
-                pos = self.potential_movement(index_row, index_column, -2, +2, board)
-                if self.verify_if_potential_piece(pos, piece_list) is None or self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, -1, +1, board)
+            if self.verify_if_potential_piece(position, piece_list) is None and position is not None:
+                position = self.potential_movement(index_row, index_column, -2, +2, board)
+                if self.verify_if_potential_piece(position, piece_list) is None or self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position)
         except:
             pass
 
         # Down - left
         try:
-            pos = self.potential_movement(index_row, index_column, +1, -1, board)
-            if self.verify_if_potential_piece(pos, piece_list) is None and pos is not None:
-                pos = self.potential_movement(index_row, index_column, +2, -2, board)
-                if self.verify_if_potential_piece(pos, piece_list) is None or self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, +1, -1, board)
+            if self.verify_if_potential_piece(position, piece_list) is None and position is not None:
+                position = self.potential_movement(index_row, index_column, +2, -2, board)
+                if self.verify_if_potential_piece(position, piece_list) is None or self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position)
         except:
             pass
 
         # Down - right
         try:
-            pos = self.potential_movement(index_row, index_column, +1, +1, board)
-            if self.verify_if_potential_piece(pos, piece_list) is None and pos is not None:
-                pos = self.potential_movement(index_row, index_column, +2, +2, board)
-                if self.verify_if_potential_piece(pos, piece_list) is None or self.verify_if_potential_piece(pos, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos)
+            position = self.potential_movement(index_row, index_column, +1, +1, board)
+            if self.verify_if_potential_piece(position, piece_list) is None and position is not None:
+                position = self.potential_movement(index_row, index_column, +2, +2, board)
+                if self.verify_if_potential_piece(position, piece_list) is None or self.verify_if_potential_piece(position, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position)
         except:
             pass
+
+        self.general_cant_move_here(piece_list, piece)
 
 
 class Horse(Pieces):
@@ -597,61 +578,63 @@ class Horse(Pieces):
 
         # Left - up (left 2 up 1)
         try:
-            pos = self.potential_movement(index_row, index_column, 0, -1, board)
-            if self.verify_if_potential_piece(pos, piece_list) is None and pos is not None:
+            position = self.potential_movement(index_row, index_column, 0, -1, board)
+            if self.verify_if_potential_piece(position, piece_list) is None and position is not None:
                 #left up
-                pos_2 = self.potential_movement(index_row, index_column, -1, -2, board)
+                position_2 = self.potential_movement(index_row, index_column, -1, -2, board)
                 #left down
-                pos_3 = self.potential_movement(index_row, index_column, +1, -2, board)
-                if self.verify_if_potential_piece(pos_2, piece_list) is None or self.verify_if_potential_piece(pos_2, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos_2)
-                if self.verify_if_potential_piece(pos_3, piece_list) is None or self.verify_if_potential_piece(pos_3, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos_3)
+                position_3 = self.potential_movement(index_row, index_column, +1, -2, board)
+                if self.verify_if_potential_piece(position_2, piece_list) is None or self.verify_if_potential_piece(position_2, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position_2)
+                if self.verify_if_potential_piece(position_3, piece_list) is None or self.verify_if_potential_piece(position_3, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position_3)
         except:
             pass
 
         # Up - left (up 2 left 1)
         try:
-            pos = self.potential_movement(index_row, index_column, -1, 0, board)
-            if self.verify_if_potential_piece(pos, piece_list) is None and pos is not None:
+            position = self.potential_movement(index_row, index_column, -1, 0, board)
+            if self.verify_if_potential_piece(position, piece_list) is None and position is not None:
                 # up left
-                pos_2 = self.potential_movement(index_row, index_column, -2, -1, board)
+                position_2 = self.potential_movement(index_row, index_column, -2, -1, board)
                 # up right
-                pos_3 = self.potential_movement(index_row, index_column, -2, +1, board)
-                if self.verify_if_potential_piece(pos_2, piece_list) is None or self.verify_if_potential_piece(pos_2, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos_2)
-                if self.verify_if_potential_piece(pos_3, piece_list) is None or self.verify_if_potential_piece(pos_3, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos_3)
+                position_3 = self.potential_movement(index_row, index_column, -2, +1, board)
+                if self.verify_if_potential_piece(position_2, piece_list) is None or self.verify_if_potential_piece(position_2, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position_2)
+                if self.verify_if_potential_piece(position_3, piece_list) is None or self.verify_if_potential_piece(position_3, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position_3)
         except:
             pass
         # right - up (right 2 up 1)
         try:
-            pos = self.potential_movement(index_row, index_column, 0, +1, board)
-            if self.verify_if_potential_piece(pos, piece_list) is None and pos is not None:
+            position = self.potential_movement(index_row, index_column, 0, +1, board)
+            if self.verify_if_potential_piece(position, piece_list) is None and position is not None:
                 # right up
-                pos_2 = self.potential_movement(index_row, index_column, -1, +2, board)
+                position_2 = self.potential_movement(index_row, index_column, -1, +2, board)
                 # right down
-                pos_3 = self.potential_movement(index_row, index_column, +1, +2, board)
-                if self.verify_if_potential_piece(pos_2, piece_list) is None or self.verify_if_potential_piece(pos_2, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos_2)
-                if self.verify_if_potential_piece(pos_3, piece_list) is None or self.verify_if_potential_piece(pos_3, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos_3)
+                position_3 = self.potential_movement(index_row, index_column, +1, +2, board)
+                if self.verify_if_potential_piece(position_2, piece_list) is None or self.verify_if_potential_piece(position_2, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position_2)
+                if self.verify_if_potential_piece(position_3, piece_list) is None or self.verify_if_potential_piece(position_3, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position_3)
         except:
             pass
         # down - left (down 2 left 1)
         try:
-            pos = self.potential_movement(index_row, index_column, +1, 0, board)
-            if self.verify_if_potential_piece(pos, piece_list) is None and pos is not None:
+            position = self.potential_movement(index_row, index_column, +1, 0, board)
+            if self.verify_if_potential_piece(position, piece_list) is None and pos is not None:
                 # down left
-                pos_2 = self.potential_movement(index_row, index_column, +2, -1, board)
+                position_2 = self.potential_movement(index_row, index_column, +2, -1, board)
                 # down right
-                pos_3 = self.potential_movement(index_row, index_column, +2, +1, board)
-                if self.verify_if_potential_piece(pos_2, piece_list) is None or self.verify_if_potential_piece(pos_2, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos_2)
-                if self.verify_if_potential_piece(pos_3, piece_list) is None or self.verify_if_potential_piece(pos_3, piece_list).get_player() != piece.get_player():
-                    piece.add_move_to_pool(pos_3)
+                position_3 = self.potential_movement(index_row, index_column, +2, +1, board)
+                if self.verify_if_potential_piece(position_2, piece_list) is None or self.verify_if_potential_piece(position_2, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position_2)
+                if self.verify_if_potential_piece(position_3, piece_list) is None or self.verify_if_potential_piece(position_3, piece_list).get_player() != piece.get_player():
+                    piece.add_move_to_pool(position_3)
         except:
             pass
+
+        self.general_cant_move_here(piece_list, piece)
 
 
 class Chariot(Pieces):
@@ -739,6 +722,8 @@ class Chariot(Pieces):
                     i += 1
         except:
             pass
+
+        self.general_cant_move_here(piece_list, piece)
 
 
 class Cannon(Pieces):
@@ -927,6 +912,8 @@ class Cannon(Pieces):
         except:
             pass
 
+        self.general_cant_move_here(piece_list, piece)
+
 
 class Soldier(Pieces):
 
@@ -1001,6 +988,8 @@ class Soldier(Pieces):
                 except:
                     pass
 
+        self.general_cant_move_here(piece_list, piece)
+
 
 def NewGame():
     """
@@ -1012,7 +1001,7 @@ def NewGame():
     # RED SIDE
     red_general = General()
     red_general.set_player('red')
-    red_general.set_current_location('e1')
+    red_general.set_current_location('d1')
     new_game.append(red_general)
 
     # red_advisor_left = Advisor()
@@ -1126,14 +1115,14 @@ def NewGame():
     # black_horse_right.set_current_location('h10')
     # new_game.append(black_horse_right)
     #
-    # black_chariot_right = Chariot()
-    # black_chariot_right.set_player('black')
-    # black_chariot_right.set_current_location('a10')
-    # new_game.append(black_chariot_right)
-
     black_chariot_right = Chariot()
     black_chariot_right.set_player('black')
     black_chariot_right.set_current_location('e10')
+    new_game.append(black_chariot_right)
+
+    black_chariot_right = Chariot()
+    black_chariot_right.set_player('black')
+    black_chariot_right.set_current_location('f10')
     new_game.append(black_chariot_right)
 
     # black_cannon_right = Cannon()
@@ -1163,7 +1152,7 @@ def NewGame():
     #
     # black_soldier_four = Soldier()
     # black_soldier_four.set_player('black')
-    # black_soldier_four.set_current_location('g7')
+    # black_soldier_four.set_current_location('d2')
     # new_game.append(black_soldier_four)
     #
     # black_soldier_five = Soldier()
@@ -1177,8 +1166,6 @@ def NewGame():
 # TESTING PURPOSES
 xi = Xiangqi()
 xi.get_piece_data()
-print(xi.get_opposing_sides_legal_moves('red'))
-print(xi.get_opposing_sides_legal_moves('black'))
 # xi.make_move('e10', 'e7')
 # print()
 # xi.get_piece_data()
