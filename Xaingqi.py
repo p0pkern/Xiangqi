@@ -8,7 +8,6 @@
 # Modules
 import pprint
 
-
 class Xiangqi:
     """
     Main game engine of the game Xiangqi, or Chinese Chess.
@@ -105,6 +104,8 @@ class Xiangqi:
     Prints red_pieces_information and black_pieces_information to screen.
     """
         print()
+        print(self.get_game_state())
+        print()
         pprint.pprint(self._red_pieces_information)
         print()
         pprint.pprint(self._black_pieces_information)
@@ -167,6 +168,9 @@ class Xiangqi:
         :return: The current state.
         """
         return self._game_state
+
+    def get_game_board(self):
+        return self._board
 
     def make_move(self, start, end):
         """
@@ -278,34 +282,26 @@ class Xiangqi:
 
         if red_general.get_piece_location() in black_moves:
             red_general.set_in_check(True)
-            self.verify_general_in_check_mate(generals, piece_list)
+            self.verify_general_in_check_mate(red_general, piece_list)
         else:
             red_general.set_in_check(False)
         if black_general.get_piece_location() in red_moves:
             black_general.set_in_check(True)
+            self.verify_general_in_check_mate(black_general, piece_list)
         else:
             black_general.set_in_check(False)
 
-    def verify_general_in_check_mate(self, generals, piece_list):
+    def verify_general_in_check_mate(self, general, piece_list):
 
         if self.get_game_state() != 'UNFINISHED':
             print("Game not in unfinished state")
             return False
 
-        red_general, black_general = generals
-
-        if len(red_general.get_legal_moves()) >= 1:
+        if len(general.get_legal_moves()) >= 1:
             print("red_general not check mate")
         else:
-            self.set_game_state('BLACK_WON')
-            print(self.get_game_state())
-        if len(black_general.get_legal_moves()) >= 1:
-            print("black_general not check mate")
-        else:
-            self.set_game_state('RED_WON')
-            print(self.get_game_state())
-
-
+            self.verify_friendly_forces_moves(general, piece_list)
+            self.verify_enemy_attack(general, piece_list)
 
     def find_generals(self, piece_list):
 
@@ -319,6 +315,66 @@ class Xiangqi:
                     black_general = i
 
         return red_general, black_general
+
+    def verify_friendly_forces_moves(self, piece, piece_list):
+
+        friendly_moves = set()
+        for i in piece_list:
+            if i.get_player() == piece.get_player():
+                for k in i.get_legal_moves():
+                    friendly_moves.add(k)
+        return friendly_moves
+
+    def verify_enemy_attack(self, piece, piece_list):
+
+        enemy_location = None
+        enemy_count = 0
+        enemy_piece = None
+        for i in piece_list:
+            if i.get_player() != piece.get_player():
+                if piece.get_piece_location() in i.get_legal_moves():
+                    enemy_piece = i
+                    enemy_location = None
+                    enemy_count += 1
+
+        print(enemy_location)
+        print(enemy_count)
+        print(enemy_piece)
+
+        if enemy_count == 0:
+            return False
+        elif enemy_count > 1:
+            if piece.get_player() == 'red':
+                self.set_game_state('BLACK_WON')
+                return False
+            else:
+                self.set_game_state('RED_WON')
+                return False
+        else:
+            # Check if enemy piece can be taken.
+            for j in piece_list:
+                if j.get_player() == piece.get_player():
+                    if enemy_location in j.get_legal_moves():
+                        return j
+
+            # Check if enemy piece can be blocked.
+            if enemy_piece.get_piece_name == 'ELEPHANT':
+                enemy_piece.general_to_elephant(piece, enemy_piece, self.get_game_board())
+                print("worked")
+
+        print(enemy_location)
+        print(enemy_count)
+        print(enemy_piece)
+
+    def general_to_horse(self, general, enemy):
+        pass
+    def general_to_chariot(self, general, enemy):
+        pass
+    def general_to_cannon(self, general, enemy):
+        pass
+    def general_to_soldier(self, general, enemy):
+        pass
+
 
 # GAME PIECES
 class Pieces:
@@ -630,6 +686,19 @@ class Elephant(Pieces):
         except:
             pass
 
+    def general_to_elephant(self, piece, enemy, board):
+        enemy_block = None
+        enemy_index_column, enemy_index_row = self.get_indexes_of_location(enemy, board)
+        general_index_column, general_index_row = self.get_indexes_of_location(piece, board)
+
+        try:
+            position = Pieces.potential_movement(enemy_index_row, enemy_index_column, enemy_index_row - general_index_row, enemy_index_column - general_index_row, board)
+            enemy_block = position
+        except:
+            print("nope")
+            pass
+
+        return enemy_block
 
 class Horse(Pieces):
 
@@ -1052,7 +1121,6 @@ class Soldier(Pieces):
                 except:
                     pass
 
-
 def NewGame():
     """
   This will load all the initial pieces to the correct locations for a new game.
@@ -1066,7 +1134,7 @@ def NewGame():
     red_general.set_current_location('c1')
     new_game.append(red_general)
 
-    # red_advisor_left = Advisor()
+    # red_advisor_left = Pieces.Advisor()
     # red_advisor_left.set_player('red')
     # red_advisor_left.set_current_location('e2')
     # new_game.append(red_advisor_left)
@@ -1126,10 +1194,10 @@ def NewGame():
     # red_soldier_two.set_current_location('c4')
     # new_game.append(red_soldier_two)
     #
-    # red_soldier_three = Soldier()
-    # red_soldier_three.set_player('red')
-    # red_soldier_three.set_current_location('e4')
-    # new_game.append(red_soldier_three)
+    red_soldier_three = Soldier()
+    red_soldier_three.set_player('red')
+    red_soldier_three.set_current_location('b9')
+    new_game.append(red_soldier_three)
     #
     # red_soldier_four = Soldier()
     # red_soldier_four.set_player('red')
@@ -1157,10 +1225,10 @@ def NewGame():
     # black_advisor_right.set_current_location('f10')
     # new_game.append(black_advisor_right)
 
-    # black_elephant_left = Elephant()
-    # black_elephant_left.set_player('black')
-    # black_elephant_left.set_current_location('e10')
-    # new_game.append(black_elephant_left)
+    black_elephant_left = Elephant()
+    black_elephant_left.set_player('black')
+    black_elephant_left.set_current_location('a3')
+    new_game.append(black_elephant_left)
     #
     # black_elephant_right = Elephant()
     # black_elephant_right.set_player('black')
@@ -1179,7 +1247,7 @@ def NewGame():
     #
     black_chariot_right = Chariot()
     black_chariot_right.set_player('black')
-    black_chariot_right.set_current_location('d9')
+    black_chariot_right.set_current_location('e9')
     new_game.append(black_chariot_right)
 
     black_chariot_right = Chariot()
@@ -1225,9 +1293,9 @@ def NewGame():
     return new_game
 
 
+
 # TESTING PURPOSES
 xi = Xiangqi()
-xi.get_piece_data()
 xi.get_piece_data()
 # xi.make_move('e9', 'd9')
 # print()
