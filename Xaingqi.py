@@ -58,7 +58,7 @@ class Xiangqi:
         self._black_pieces_information = {}
 
         # START OF GAME. Red goes first.
-        self._player_turn = 'black'
+        # self._player_turn = 'black'
         # Options are RED_WON, BLACK_WON, STALE_MATE, or UNFINISHED
         self._game_state = 'UNFINISHED'
 
@@ -124,6 +124,10 @@ class Xiangqi:
                 i.soldier_legal_moves(piece, self._board, self._active_pieces)
 
         self.update_general_pools(pieces)
+
+        self.general_cant_move_here(pieces)
+        self.is_general_in_check(pieces)
+
         self.pull_piece_information(self._active_pieces)
         return
 
@@ -133,20 +137,20 @@ class Xiangqi:
                 piece = i
                 i.general_legal_moves(piece, self._board, self._active_pieces)
 
-    def set_player_turn(self):
-        """
-        Change the current players turn.
-        """
-        if self._player_turn == 'red':
-            self._player_turn = 'black'
-        else:
-            self._player_turn = 'red'
+    # def set_player_turn(self):
+    #     """
+    #     Change the current players turn.
+    #     """
+    #     if self._player_turn == 'red':
+    #         self._player_turn = 'black'
+    #     else:
+    #         self._player_turn = 'red'
 
-    def get_player_turn(self):
-        """
-        :return: Current players turn
-        """
-        return self._player_turn
+    # def get_player_turn(self):
+    #     """
+    #     :return: Current players turn
+    #     """
+    #     return self._player_turn
 
     def set_game_state(self, state):
         """
@@ -194,7 +198,9 @@ class Xiangqi:
                     break
 
             # Check to see that a piece is actually selected.
-            if piece is None or piece.get_player() != self.get_player_turn() or end not in piece.get_legal_moves():
+
+            # or piece.get_player() != self.get_player_turn()
+            if piece is None or end not in piece.get_legal_moves():
                 return False
 
             # Check if there is piece at the end location.
@@ -211,7 +217,7 @@ class Xiangqi:
                     self._active_pieces.remove(piece_2)
                     piece.set_current_location(end)
                     self.update_move_pool(self._active_pieces)
-                    self.set_player_turn()
+                    # self.set_player_turn()
                     return True
                 else:
                     return False
@@ -220,7 +226,7 @@ class Xiangqi:
             else:
                 piece.set_current_location(end)
                 self.update_move_pool(self._active_pieces)
-                self.set_player_turn()
+                # self.set_player_turn()
                 return True
         else:
             return False
@@ -243,6 +249,55 @@ class Xiangqi:
             if i.get_piece_name() == 'GENERAL':
                print(str(i.get_player()) + str(i.get_in_check()))
 
+    def general_cant_move_here(self, piece_list):
+        for i in piece_list:
+            if i.get_player() == 'red' and i.get_piece_name() == 'GENERAL':
+                red_general = i
+            elif i.get_player() == 'black' and i.get_piece_name() == 'GENERAL':
+                black_general = i
+
+        for j in piece_list:
+            if j.get_player() == 'black':
+                for k in j.get_legal_moves():
+                    if k in red_general.get_legal_moves():
+                        red_general.delete_move(k)
+
+        for m in piece_list:
+            if m.get_player() == 'red':
+                for n in m.get_legal_moves():
+                    if n in black_general.get_legal_moves():
+                        black_general.delete_move(n)
+
+    def is_general_in_check(self, piece_list):
+        for i in piece_list:
+            if i.get_player() == 'red' and i.get_piece_name() == 'GENERAL':
+                red_general = i
+            elif i.get_player() == 'black' and i.get_piece_name() == 'GENERAL':
+                black_general = i
+
+        red_general.set_in_check(False)
+        black_general.set_in_check(False)
+
+        black_moves = set()
+        red_moves = set()
+        for j in piece_list:
+            if j.get_piece_name() != 'GENERAL':
+                if j.get_player() == 'black':
+                    for k in j.get_legal_moves():
+                        black_moves.add(k)
+                elif j.get_player() == 'red':
+                    for k in j.get_legal_moves():
+                        red_moves.add(k)
+
+        for m in black_moves:
+            if red_general.get_piece_location() in black_moves:
+                red_general.set_in_check(True)
+            else:
+                red_general.set_in_check(False)
+        if black_general.get_piece_location() in red_moves:
+            black_general.set_in_check(True)
+        else:
+            black_general.set_in_check(False)
 
 # GAME PIECES
 class Pieces:
@@ -369,57 +424,6 @@ class Pieces:
             move_pool = ['d8', 'd9', 'd10', 'e8', 'e9', 'e10', 'f8', 'f9', 'f10']
         return move_pool
 
-    def general_cant_move_here(self, piece_list):
-        for i in piece_list:
-            if i.get_player() == 'red' and i.get_piece_name() == 'GENERAL':
-                red_general = i
-            elif i.get_player() == 'black' and i.get_piece_name() == 'GENERAL':
-                black_general = i
-
-        for j in piece_list:
-            if j.get_player() == 'black':
-                for k in j.get_legal_moves():
-                    if k in red_general.get_legal_moves():
-                        red_general.delete_move(k)
-
-        for m in piece_list:
-            if m.get_player() == 'red':
-                for n in m.get_legal_moves():
-                    if n in black_general.get_legal_moves():
-                        black_general.delete_move(n)
-
-    def is_general_in_check(self, piece_list):
-        for i in piece_list:
-            if i.get_player() == 'red' and i.get_piece_name() == 'GENERAL':
-                red_general = i
-                red_gen_location = i.get_piece_location()
-            elif i.get_player() == 'black' and i.get_piece_name() == 'GENERAL':
-                black_general = i
-                black_gen_location = i.get_piece_location()
-
-        print(red_gen_location)
-        print(black_gen_location)
-
-        print()
-        print(red_general.get_in_check())
-        print(black_general.get_in_check())
-
-        for j in piece_list:
-            if j.get_player() == 'black':
-                if red_gen_location in j.get_legal_moves():
-                    red_general.set_in_check(True)
-                    break
-                else:
-                    red_general.set_in_check(False)
-
-        for k in piece_list:
-            if k.get_player() == 'red':
-                if black_gen_location in k.get_legal_moves():
-                    black_general.set_in_check(True)
-                    break
-                else:
-                    black_general.set_in_check(False)
-
 
 class General(Pieces):
     """
@@ -434,12 +438,10 @@ class General(Pieces):
         self._in_check = False
 
     def set_in_check(self, status):
-        if status is True:
-            self._in_check = True
+        self._in_check = status
 
     def get_in_check(self):
         return self._in_check
-
 
     def general_legal_moves(self, piece, board, piece_list):
         """
@@ -493,8 +495,6 @@ class General(Pieces):
         except:
             pass
 
-        self.general_cant_move_here(piece_list)
-        self.is_general_in_check(piece_list)
 
 class Advisor(Pieces):
     """
@@ -556,8 +556,6 @@ class Advisor(Pieces):
         except:
             pass
 
-        self.general_cant_move_here(piece_list)
-
 
 class Elephant(Pieces):
 
@@ -610,8 +608,6 @@ class Elephant(Pieces):
                     piece.add_move_to_pool(position)
         except:
             pass
-
-        self.general_cant_move_here(piece_list)
 
 
 class Horse(Pieces):
@@ -686,8 +682,6 @@ class Horse(Pieces):
                     piece.add_move_to_pool(position_3)
         except:
             pass
-
-        self.general_cant_move_here(piece_list)
 
 
 class Chariot(Pieces):
@@ -776,8 +770,6 @@ class Chariot(Pieces):
         except:
             pass
 
-        self.general_cant_move_here(piece_list)
-        self.is_general_in_check(piece_list)
 
 class Cannon(Pieces):
 
@@ -965,8 +957,6 @@ class Cannon(Pieces):
         except:
             pass
 
-        self.general_cant_move_here(piece_list)
-        self.is_general_in_check(piece_list)
 
 class Soldier(Pieces):
 
@@ -1040,8 +1030,6 @@ class Soldier(Pieces):
                             piece.delete_move(a)
                 except:
                     pass
-
-        self.general_cant_move_here(piece_list)
 
 
 def NewGame():
@@ -1218,13 +1206,10 @@ def NewGame():
 
 # TESTING PURPOSES
 xi = Xiangqi()
-# xi.get_piece_data()
 xi.make_move('e9', 'd9')
 print()
-xi.get_piece_data()
 xi.make_move('d1', 'e1')
 print()
-xi.get_piece_data()
 # xi.make_move('c6', 'e4')
 # print()
 # xi.get_piece_data()
