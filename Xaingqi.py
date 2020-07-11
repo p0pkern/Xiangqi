@@ -289,11 +289,10 @@ class Xiangqi:
                     for k in j.get_legal_moves():
                         red_moves.add(k)
 
-        for m in black_moves:
-            if red_general.get_piece_location() in black_moves:
-                red_general.set_in_check(True)
-            else:
-                red_general.set_in_check(False)
+        if red_general.get_piece_location() in black_moves:
+            red_general.set_in_check(True)
+        else:
+            red_general.set_in_check(False)
         if black_general.get_piece_location() in red_moves:
             black_general.set_in_check(True)
         else:
