@@ -1,5 +1,5 @@
 # Author: Chris Peterman
-# Version: 0.0
+# Version: 1.0
 # Name: Xiangqi Game
 # Language: Python 3
 # Description: This is a program for the game Xaingqi (known as Chinese Chess). A tactical board game simulating a
@@ -44,7 +44,7 @@ class Xiangqi:
         self._black_pieces_information = {}
 
         # START OF GAME. Red goes first.
-        self._player_turn = 'red'
+        self._player_turn = 'black'
 
         # Options are RED_WON, BLACK_WON, STALE_MATE, or UNFINISHED
         self._game_state = 'UNFINISHED'
@@ -700,6 +700,7 @@ class Elephant(Pieces):
 
         return enemy_block
 
+
 class Horse(Pieces):
 
     def __init__(self):
@@ -1121,6 +1122,7 @@ class Soldier(Pieces):
                 except:
                     pass
 
+
 def NewGame():
     """
   This will load all the initial pieces to the correct locations for a new game.
@@ -1131,181 +1133,164 @@ def NewGame():
     # RED SIDE
     red_general = General()
     red_general.set_player('red')
-    red_general.set_current_location('c1')
+    red_general.set_current_location('e1')
     new_game.append(red_general)
 
-    # red_advisor_left = Pieces.Advisor()
-    # red_advisor_left.set_player('red')
-    # red_advisor_left.set_current_location('e2')
-    # new_game.append(red_advisor_left)
+    red_advisor_left = Pieces.Advisor()
+    red_advisor_left.set_player('red')
+    red_advisor_left.set_current_location('d1')
+    new_game.append(red_advisor_left)
 
-    # red_advisor_right = Advisor()
-    # red_advisor_right.set_player('red')
-    # red_advisor_right.set_current_location('f1')
-    # new_game.append(red_advisor_right)
+    red_advisor_right = Advisor()
+    red_advisor_right.set_player('red')
+    red_advisor_right.set_current_location('f1')
+    new_game.append(red_advisor_right)
 
-    # red_elephant_left = Elephant()
-    # red_elephant_left.set_player('black')
-    # red_elephant_left.set_current_location('e3')
-    # new_game.append(red_elephant_left)
-    #
-    # red_elephant_right = Elephant()
-    # red_elephant_right.set_player('red')
-    # red_elephant_right.set_current_location('g5')
-    # new_game.append(red_elephant_right)
-    #
-    # red_horse_left = Horse()
-    # red_horse_left.set_player('red')
-    # red_horse_left.set_current_location('b1')
-    # new_game.append(red_horse_left)
-    #
-    # red_horse_right = Horse()
-    # red_horse_right.set_player('red')
-    # red_horse_right.set_current_location('h1')
-    # new_game.append(red_horse_right)
-    #
-    # red_chariot_right = Chariot()
-    # red_chariot_right.set_player('red')
-    # red_chariot_right.set_current_location('i1')
-    # new_game.append(red_chariot_right)
-    #
-    # red_chariot_left = Chariot()
-    # red_chariot_left.set_player('red')
-    # red_chariot_left.set_current_location('a1')
-    # new_game.append(red_chariot_left)
-    #
-    # red_cannon_right = Cannon()
-    # red_cannon_right.set_player('red')
-    # red_cannon_right.set_current_location('b3')
-    # new_game.append(red_cannon_right)
-    #
-    # red_cannon_left = Cannon()
-    # red_cannon_left.set_player('red')
-    # red_cannon_left.set_current_location('h3')
-    # new_game.append(red_cannon_left)
-    #
-    # red_soldier_one = Soldier()
-    # red_soldier_one.set_player('red')
-    # red_soldier_one.set_current_location('a4')
-    # new_game.append(red_soldier_one)
-    #
-    # red_soldier_two = Soldier()
-    # red_soldier_two.set_player('red')
-    # red_soldier_two.set_current_location('c4')
-    # new_game.append(red_soldier_two)
-    #
+    red_elephant_left = Elephant()
+    red_elephant_left.set_player('black')
+    red_elephant_left.set_current_location('c1')
+    new_game.append(red_elephant_left)
+
+    red_elephant_right = Elephant()
+    red_elephant_right.set_player('red')
+    red_elephant_right.set_current_location('g1')
+    new_game.append(red_elephant_right)
+
+    red_horse_left = Horse()
+    red_horse_left.set_player('red')
+    red_horse_left.set_current_location('b1')
+    new_game.append(red_horse_left)
+
+    red_horse_right = Horse()
+    red_horse_right.set_player('red')
+    red_horse_right.set_current_location('h1')
+    new_game.append(red_horse_right)
+
+    red_chariot_right = Chariot()
+    red_chariot_right.set_player('red')
+    red_chariot_right.set_current_location('i1')
+    new_game.append(red_chariot_right)
+
+    red_chariot_left = Chariot()
+    red_chariot_left.set_player('red')
+    red_chariot_left.set_current_location('a1')
+    new_game.append(red_chariot_left)
+
+    red_cannon_right = Cannon()
+    red_cannon_right.set_player('red')
+    red_cannon_right.set_current_location('b3')
+    new_game.append(red_cannon_right)
+
+    red_cannon_left = Cannon()
+    red_cannon_left.set_player('red')
+    red_cannon_left.set_current_location('h3')
+    new_game.append(red_cannon_left)
+
+    red_soldier_one = Soldier()
+    red_soldier_one.set_player('red')
+    red_soldier_one.set_current_location('a4')
+    new_game.append(red_soldier_one)
+
+    red_soldier_two = Soldier()
+    red_soldier_two.set_player('red')
+    red_soldier_two.set_current_location('c4')
+    new_game.append(red_soldier_two)
+
     red_soldier_three = Soldier()
     red_soldier_three.set_player('red')
-    red_soldier_three.set_current_location('b9')
+    red_soldier_three.set_current_location('e4')
     new_game.append(red_soldier_three)
-    #
-    # red_soldier_four = Soldier()
-    # red_soldier_four.set_player('red')
-    # red_soldier_four.set_current_location('g4')
-    # new_game.append(red_soldier_four)
-    #
-    # red_soldier_five = Soldier()
-    # red_soldier_five.set_player('red')
-    # red_soldier_five.set_current_location('i4')
-    # new_game.append(red_soldier_five)
+
+    red_soldier_four = Soldier()
+    red_soldier_four.set_player('red')
+    red_soldier_four.set_current_location('g4')
+    new_game.append(red_soldier_four)
+
+    red_soldier_five = Soldier()
+    red_soldier_five.set_player('red')
+    red_soldier_five.set_current_location('i4')
+    new_game.append(red_soldier_five)
 
     # BLACK SIDE
     black_general = General()
     black_general.set_player('black')
-    black_general.set_current_location('f10')
+    black_general.set_current_location('e10')
     new_game.append(black_general)
-    #
-    # black_advisor_left = Advisor()
-    # black_advisor_left.set_player('black')
-    # black_advisor_left.set_current_location('d10')
-    # new_game.append(black_advisor_left)
-    #
-    # black_advisor_right = Advisor()
-    # black_advisor_right.set_player('black')
-    # black_advisor_right.set_current_location('f10')
-    # new_game.append(black_advisor_right)
+
+    black_advisor_left = Advisor()
+    black_advisor_left.set_player('black')
+    black_advisor_left.set_current_location('d10')
+    new_game.append(black_advisor_left)
+
+    black_advisor_right = Advisor()
+    black_advisor_right.set_player('black')
+    black_advisor_right.set_current_location('f10')
+    new_game.append(black_advisor_right)
 
     black_elephant_left = Elephant()
     black_elephant_left.set_player('black')
-    black_elephant_left.set_current_location('a3')
+    black_elephant_left.set_current_location('c10')
     new_game.append(black_elephant_left)
-    #
-    # black_elephant_right = Elephant()
-    # black_elephant_right.set_player('black')
-    # black_elephant_right.set_current_location('g10')
-    # new_game.append(black_elephant_right)
-    #
-    # black_horse_left = Horse()
-    # black_horse_left.set_player('black')
-    # black_horse_left.set_current_location('d5')
-    # new_game.append(black_horse_left)
-    #
-    # black_horse_right = Horse()
-    # black_horse_right.set_player('black')
-    # black_horse_right.set_current_location('h10')
-    # new_game.append(black_horse_right)
-    #
+
+    black_elephant_right = Elephant()
+    black_elephant_right.set_player('black')
+    black_elephant_right.set_current_location('g10')
+    new_game.append(black_elephant_right)
+
+    black_horse_left = Horse()
+    black_horse_left.set_player('black')
+    black_horse_left.set_current_location('b10')
+    new_game.append(black_horse_left)
+
+    black_horse_right = Horse()
+    black_horse_right.set_player('black')
+    black_horse_right.set_current_location('h10')
+    new_game.append(black_horse_right)
+
     black_chariot_right = Chariot()
     black_chariot_right.set_player('black')
-    black_chariot_right.set_current_location('e9')
+    black_chariot_right.set_current_location('a10')
     new_game.append(black_chariot_right)
 
     black_chariot_right = Chariot()
     black_chariot_right.set_player('black')
-    black_chariot_right.set_current_location('c9')
+    black_chariot_right.set_current_location('i10')
     new_game.append(black_chariot_right)
 
-    # black_cannon_right = Cannon()
-    # black_cannon_right.set_player('black')
-    # black_cannon_right.set_current_location('b8')
-    # new_game.append(black_cannon_right)
-    #
-    # black_cannon_left = Cannon()
-    # black_cannon_left.set_player('black')
-    # black_cannon_left.set_current_location('h8')
-    # new_game.append(black_cannon_left)
-    #
-    # black_soldier_one = Soldier()
-    # black_soldier_one.set_player('black')
-    # black_soldier_one.set_current_location('a7')
-    # new_game.append(black_soldier_one)
-    #
-    # black_soldier_two = Soldier()
-    # black_soldier_two.set_player('black')
-    # black_soldier_two.set_current_location('c7')
-    # new_game.append(black_soldier_two)
-    #
-    # black_soldier_three = Soldier()
-    # black_soldier_three.set_player('black')
-    # black_soldier_three.set_current_location('e7')
-    # new_game.append(black_soldier_three)
-    #
-    # black_soldier_four = Soldier()
-    # black_soldier_four.set_player('black')
-    # black_soldier_four.set_current_location('d2')
-    # new_game.append(black_soldier_four)
-    #
-    # black_soldier_five = Soldier()
-    # black_soldier_five.set_player('black')
-    # black_soldier_five.set_current_location('i7')
-    # new_game.append(black_soldier_five)
+    black_cannon_right = Cannon()
+    black_cannon_right.set_player('black')
+    black_cannon_right.set_current_location('b8')
+    new_game.append(black_cannon_right)
+
+    black_cannon_left = Cannon()
+    black_cannon_left.set_player('black')
+    black_cannon_left.set_current_location('h8')
+    new_game.append(black_cannon_left)
+
+    black_soldier_one = Soldier()
+    black_soldier_one.set_player('black')
+    black_soldier_one.set_current_location('a7')
+    new_game.append(black_soldier_one)
+
+    black_soldier_two = Soldier()
+    black_soldier_two.set_player('black')
+    black_soldier_two.set_current_location('c7')
+    new_game.append(black_soldier_two)
+
+    black_soldier_three = Soldier()
+    black_soldier_three.set_player('black')
+    black_soldier_three.set_current_location('e7')
+    new_game.append(black_soldier_three)
+
+    black_soldier_four = Soldier()
+    black_soldier_four.set_player('black')
+    black_soldier_four.set_current_location('d2')
+    new_game.append(black_soldier_four)
+
+    black_soldier_five = Soldier()
+    black_soldier_five.set_player('black')
+    black_soldier_five.set_current_location('i7')
+    new_game.append(black_soldier_five)
 
     return new_game
 
-
-
-# TESTING PURPOSES
-xi = Xiangqi()
-xi.get_piece_data()
-# xi.make_move('e9', 'd9')
-# print()
-# xi.get_piece_data()
-# xi.make_move('d1', 'e1')
-# print()
-# xi.get_piece_data()
-# xi.make_move('c6', 'e4')
-# print()
-# xi.get_piece_data()
-# xi.make_move('e4', 'c2')
-# print()
-# xi.get_piece_data()
