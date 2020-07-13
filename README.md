@@ -5,3 +5,4 @@
 
 ## Current Version Notes 
 - Completed implementation of piece movements and check mate.
+- README WILL BE UPDATED ONCE I LEARN SOME MORE ON HOW TO CREATE A README.
